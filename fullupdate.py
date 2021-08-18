@@ -7,6 +7,7 @@ import socket
 import datetime
 import time
 import pathlib
+import toolzlib
 
 __description__ = "Do a full upgrade conclued by system informations"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -70,8 +71,6 @@ def user_conf_backup():
         print(f"{ci}Backup{c0}:")
 
         folder = "/backup"
-        #if socket.gethostname() == "mrchat":
-        #    folder = "/volumes/backup"
 
         if os.system(f"mount | grep -q {folder}") != 0:
             dobackup = False
@@ -99,6 +98,12 @@ def system_informations(home):
     binpath = "/usr/local/bin"
     userbin = f"{home}/.local/bin"
     scripts = {"pyfetch": "", "tsm": "-t", "vbox": "list", "pydf": ""}
+
+    if not toolzlib.pkg.is_installed("transmission-daemon"):
+        scripts.pop("tsm", None)
+
+    if not toolzlib.pkg.is_installed("virtualbox"):
+        scripts.pop("vbox", None)
 
     for script, opt in scripts.items():
         if os.path.exists(f"{binpath}/{script}"):
