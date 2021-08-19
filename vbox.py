@@ -4,6 +4,7 @@ import sys
 import re
 import os
 import pathlib
+import toolzlib
 
 __description__ = "Manage VirtualBox VM Groups"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -108,7 +109,7 @@ def list_vms():
 if __name__ == "__main__":
     home = pathlib.Path.home()
 
-    if os.popen("which VBoxManage").read() == "":
+    if not toolzlib.pkg.is_installed("virtualbox"):
         print(f"{error} VirtualBox not installed\n")
         exit(1)
 

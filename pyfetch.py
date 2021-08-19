@@ -169,17 +169,15 @@ def get_shell():
 def get_term():
     term = "N/A"
 
-    testenv = os.popen("which x-terminal-emulator").read()
-    if testenv != "":
-        getterm = "x-terminal-emulator --version 2>/dev/null"
-        try:
-            os.environ['DISPLAY']
-        except KeyError:
-            for line in os.popen(getterm):
-                if "terminator" in line:
-                    term = "terminator"
-        else:
-            term = os.popen(getterm).read().rstrip()
+    getterm = "x-terminal-emulator --version 2>/dev/null"
+    try:
+        os.environ['DISPLAY']
+    except KeyError:
+        for line in os.popen(getterm):
+            if "terminator" in line:
+                term = "terminator"
+    else:
+        term = os.popen(getterm).read().rstrip()
 
     return f"{ci}Terminal{c0}:  {term}"
 
