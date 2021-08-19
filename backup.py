@@ -122,7 +122,7 @@ def backup(destfolder):
                 "/usr/share/X11/xorg.conf.d/10-nvidia.conf"]
     morebackups = []
     if socket.gethostname() == "mrchat":
-        morebackups = ["/volumes/speedix/Music"]
+        morebackups = ["/volumes/speedix/Music", "/volumes/speedix/Games"]
 
     today = datetime.datetime.today().strftime("%y%m")
     bkpfolder = f"{destfolder}/{today}_{socket.gethostname()}"
@@ -172,11 +172,10 @@ def backup(destfolder):
     print(f"{done} Config files backuped in '{bkpfolder}'", end=" ")
     print(f"with {ecol}{errcfg}{c0} error(s)")
 
-    errother = 0
-    morebkpl = []
     for bkpsrc in morebackups:
         if os.path.exists(bkpsrc):
-            morebkpl.append(bkpsrc)
+            errother = 0
+            ecol = "\33[32m"
             bkpsubfolder = os.path.dirname(bkpsrc)
             if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
                 os.makedirs(f"{bkpfolder}{bkpsubfolder}")
@@ -184,15 +183,10 @@ def backup(destfolder):
             bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
             if os.system(bkp_cmd) != 0:
                 errother += 1
-    if errother == 0:
-        ecol = "\33[32m"
-    else:
-        ecol = "\33[31m"
-
-    if morebkpl != []:
-        morebkp = "\, '".join(morebkpl)
-        print(f"{done} '{morebkp}' backuped in '{bkpfolder}'", end=" ")
-        print(f"with {ecol}{errother}{c0} error(s)")
+            if errother != 0:
+                ecol = "\33[31m"
+            print(f"{done} '{bkpsrc}' backuped in '{bkpfolder}'", end=" ")
+            print(f"with {ecol}{errother}{c0} error(s)")
 
     print()
 
