@@ -4,6 +4,7 @@ import os
 import shutil
 from . import file
 from . import sys
+from . import user
 
 __description__ = "Package management module"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -62,9 +63,11 @@ def is_installed(pkg):
 def install(pkgs):
     """Install a list of packages"""
 
+    high = "" if user.is_sudo() else "sudo "
+
     cmds = []
-    cmds.append(srcupdate)
-    cmds.append(f"{pkginstall} {' '.join(pkgs)}")
+    cmds.append(f"{high}{srcupdate}")
+    cmds.append(f"{high}{pkginstall} {' '.join(pkgs)}")
 
     for cmd in cmds:
         os.system(cmd)
@@ -73,22 +76,40 @@ def install(pkgs):
 def remove(pkgs):
     """Remove a list of packages"""
 
-    os.system(f"{pkgremove} {' '.join(pkgs)}")
+    high = "" if user.is_sudo() else "sudo "
+
+    os.system(f"{high}{pkgremove} {' '.join(pkgs)}")
 
 
 def purge(pkgs):
     """Purge a list of packages"""
 
+    high = "" if user.is_sudo() else "sudo "
+
     cmds = []
-    cmds.append(f"{pkgpurge} {' '.join(pkgs)}")
-    cmds.append(unneededremove)
+    cmds.append(f"{high}{pkgpurge} {' '.join(pkgs)}")
+    cmds.append(f"{high}{unneededremove}")
 
     for cmd in cmds:
         os.system(cmd)
 
 
+def rm_obsoletes():
+    """emove obsolete packages"""
+
+    getobs = f"apt list ?obsolete 2>/dev/null | "
+    getobs += "awk  -F'/' '/\/now/ {print $1}'"
+    obsout = os.popen(getobs).read()
+    obspkgs = [ pkg.split(":")[0] for pkg in obsout.split("\n") ]
+
+    if obspkgs:
+        purge(obspkgs)
+
+
 def clean():
     """Remove residual configurations and clean repo cache"""
+
+    high = "" if user.is_sudo() else "sudo "
 
     rcpkgs = []
     listrcpkgs_cmd = f"dpkg -l | grep ^rc"
@@ -97,19 +118,28 @@ def clean():
     for line in listrcpkgs:
         rcpkgs.append(line.split()[1])
 
+    cmds = []
     if rcpkgs != []:
-        os.system(f"{pkgpurge} {' '.join(rcpkgs)}")
+        cmds.append(f"{high}{pkgpurge} {' '.join(rcpkgs)}")
+    cmds.append(f"{high}{unneededremove}")
+    cmds.append(f"{high}{srcsoftclean}")
+    cmds.append(f"{high}{srcclean}")
 
-    os.system(unneededremove)
-    os.system(srcsoftclean)
-    os.system(srcclean)
+    for cmd in cmds:
+        os.system(cmd)
 
 
 def upgrade():
     """Upgrade distro"""
 
-    os.system(srcupdate)
-    os.system(fullupgrade)
+    high = "" if user.is_sudo() else "sudo "
+
+    cmds = []
+    cmds.append(f"{high}{srcupdate}")
+    cmds.append(f"{high}{fullupgrade}")
+
+    for cmd in cmds:
+        os.system(cmd)
 
 
 distro = sys.get_distro()

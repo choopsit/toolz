@@ -12,6 +12,16 @@ import toolzlib
 __description__ = "Do a full upgrade conclued by system informations"
 __author__ = "Choops <choopsbd@gmail.com>"
 
+c0 = "\33[0m"
+ce = "\33[31m"
+cok = "\33[32m"
+cw = "\33[33m"
+ci = "\33[36m"
+
+error = f"{ce}E{c0}:"
+done = f"{cok}OK{c0}:"
+warning = f"{cw}W{c0}:"
+
 
 def usage():
     myscript = f"{os.path.basename(__file__)}"
@@ -25,31 +35,17 @@ def usage():
 
 def system_upgrade(rmobs):
     print(f"{ci}System upgrade{c0}:")
-    os.system("sudo apt update >/dev/null 2>&1")
-    os.system("sudo apt full-upgrade 2>/dev/null")
 
-    rcpkgs = os.popen("dpkg -l | awk '/^rc/ {print $2}'").read()
-    rcpkgsl = ""
-    for pkg in rcpkgs.split("\n"):
-        rcpkgsl += pkg.split(":")[0]
-    if rcpkgsl != "":
-        os.system(f"sudo apt purge {rcpkgsl} 2>/dev/null")
+    sudo = ""
+    if not toolzlib.user.is_sudo():
+        sudo = "sudo "
+
+    toolzlib.pkg.upgrade()
 
     if rmobs:
-        getobs = "apt list ?obsolete 2>/dev/null | "
-        getobs += "awk  -F'/' '/\/now/ {print $1}'"
-        obspkgs = os.popen(getobs).read()
-        obspkgsl = ""
-        for pkg in obspkgs.split("\n"):
-            obspkgsl += pkg.split(":")[0]
-        if obspkgsl != "":
-            os.system(f"sudo apt purge -y {obspkgsl} 2>/dev/null")
+        toolzlib.pkg.rm_obsoletes()
 
-    cleancmds = ["sudo apt autoremove --purge 2>/dev/null",
-                 "sudo apt autoclean 2>/dev/null",
-                 "sudo apt clean 2>/dev/null"]
-    for cmd in cleancmds:
-        os.system(cmd)
+    toolzlib.pkg.clean()
 
     for file in os.listdir(home):
         if file.startswith(".xsession"):
@@ -113,12 +109,6 @@ def system_informations(home):
     if os.path.exists("/usr/local/bin/statmygits"):
         show_git_status(repopath)
 
-
-c0 = "\33[0m"
-ce = "\33[31m"
-ci = "\33[36m"
-
-error = f"{ce}E{c0}:"
 
 if __name__ == "__main__":
     cleanobs = False

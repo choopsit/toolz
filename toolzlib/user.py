@@ -49,3 +49,14 @@ def add_to_group(user, grp):
     
     if toolzlib.yesno(f"Add '{user}' to '{grp}'", "y"):
         os.system(f"adduser {user} {grp}")
+
+
+def is_sudo():
+    """Check if script is launched as 'root' or using 'sudo'"""
+
+    ret = False
+
+    if os.getuid == 0:
+        ret = True
+
+    return ret
