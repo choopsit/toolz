@@ -56,7 +56,7 @@ def is_sudo():
 
     ret = False
 
-    if os.getuid == 0:
+    if os.getuid() == 0:
         ret = True
 
     return ret

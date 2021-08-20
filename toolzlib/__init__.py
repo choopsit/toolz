@@ -141,3 +141,7 @@ def prerequisites(reqpkgs):
                 exit(1)
         else:
             exit(1)
+        for rqpkg in missingpkgs:
+            if not pkg.is_installed(rqpkg):
+                print(f"{error} Needed package not installed\n")
+                exit(1)
