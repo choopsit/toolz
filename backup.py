@@ -155,7 +155,7 @@ def backup(destfolder):
 if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
-    elif len(sys.argv) = 1:
+    elif len(sys.argv) == 1:
         print(f"{error} Need an argument\n")
         usage(1)
     elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):

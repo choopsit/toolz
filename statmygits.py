@@ -5,6 +5,7 @@ import socket
 import sys
 import re
 import os
+import getpass
 import toolzlib
 
 __description__ = "Return status of all git repositories stocked in a targetted folder"

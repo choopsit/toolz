@@ -6,6 +6,7 @@ import socket
 import shutil
 import subprocess
 from . import file
+from . import git
 from . import pkg
 from . import syst
 from . import user

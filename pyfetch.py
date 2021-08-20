@@ -317,7 +317,7 @@ if __name__ == "__main__":
         usage()
     elif len(sys.argv) == 2 and re.match('^-(d|-default-logo)$', sys.argv[1]):
         defaultlogo = True
-    else:
+    elif len(sys.argv) > 1:
         print(f"{error} Bad argument")
         usage(1)
 
