@@ -67,13 +67,13 @@ def start_vboxgrp(vms, vboxgrp):
     for vm in vms:
         print(f"{ci}Starting VM '{vm}'...{c0}")
         if not is_vm(vm):
-            print(f"{error} No VM '{vm}' in '{vboxgrp}'")
+            print(f"{error} No VM '{vm}' in '{vboxgrp}'\n")
         elif not is_running(vm):
             startvm = f"VBoxManage startvm {vm} --type headless"
             if os.system(startvm) == 0:
                 print(f"{done} '{vm}' started")
             else:
-                print(f"{error} Failed to start '{vm}'")
+                print(f"{error} Failed to start '{vm}'\n")
         else:
             print(f"{warning} '{vm}' is already running")
     print()
@@ -84,14 +84,14 @@ def stop_vboxgrp(vms, vboxgrp):
     for vm in vms:
         print(f"{ci}Stopping VM '{vm}'...{c0}")
         if not is_vm(vm):
-            print(f"{error} No VM '{vm}' in '{vboxgrp}'")
+            print(f"{error} No VM '{vm}' in '{vboxgrp}'\n")
         elif is_running(vm):
             # stopvm = f"VBoxManage controlvm {vm} acpipowerbutton"
             stopvm = f"VBoxManage controlvm {vm} poweroff"
             if os.system(stopvm) == 0:
                 print(f"{done} '{vm}' stopped")
             else:
-                print(f"{error} Failed to stop '{vm}'")
+                print(f"{error} Failed to stop '{vm}'\n")
         else:
             print(f"{warning} '{vm}' is already down") 
     print()
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         exit(1)
 
     if len(sys.argv) > 3:
-        print(f"{error} Too many aguments")
+        print(f"{error} Too many aguments\n")
         usage(1)
         
     myvboxstock = f"{home}/Work/vbox"
@@ -129,7 +129,7 @@ if __name__ == "__main__":
                 list_vms()
                 exit(0)
             else:
-                print(f"{error} 'list' option does not take arguments")
+                print(f"{error} 'list' option does not take arguments\n")
                 usage(1)
         elif re.match('^st(art|op)$', sys.argv[1]):
             vboxcmd = sys.argv[1]
@@ -138,10 +138,10 @@ if __name__ == "__main__":
             elif is_vboxgrp(sys.argv[2], myvboxstock):
                 myvboxgrp = sys.argv[2]
             else:
-                print(f"{error} No VBox group '{sys.argv[2]}'")
+                print(f"{error} No VBox group '{sys.argv[2]}'\n")
                 exit(1)
     else:
-        print(f"{error} Need arguments")
+        print(f"{error} Need arguments\n")
         usage(1)
     
     myvms = []

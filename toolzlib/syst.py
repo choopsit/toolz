@@ -67,17 +67,17 @@ def prereq():
 
     distro = get_distro()
     if distro != "debian":
-        print(f"{error} OS is not Debian")
+        print(f"{error} OS is not Debian\n")
         exit(1)
 
     olddebian = ["buster", "stretch", "jessie", "wheezy", "squeeze", "lenny"]
     codename = get_codename()
     if codename in olddebian:
-        print(f"{error} '{codename}' is a too old Debian version")
+        print(f"{error} '{codename}' is a too old Debian version\n")
         exit(1)
 
     if os.getuid() != 0:
-        print(f"{error} Need higher privileges")
+        print(f"{error} Need higher privileges\n")
         exit(1)
 
 

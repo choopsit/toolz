@@ -27,7 +27,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode):
-    myscript = f"{os.path.basename(__file__)}"
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION] <BACKUP_FOLDER>")
     print(f"{ci}Options{c0}:")
@@ -41,7 +41,7 @@ def test_backupfolder(folder):
                   "/media", "/mnt", "/opt", "/proc", "/root", "/run", "/srv",
                   "/sys", "/tmp", "/usr", "/var"]
     if folder in forbiddens:
-        print(f"{error} Invalid folder '{folder}'")
+        print(f"{error} Invalid folder '{folder}'\n")
         exit(1)
 
     okcreate=""
@@ -55,7 +55,7 @@ def test_backupfolder(folder):
             os.chmod(folder, 0o777)
 
     if not os.path.isdir(folder):
-        print(f"{error} '{folder}' exists but is not a folder")
+        print(f"{error} '{folder}' exists but is not a folder\n")
         exit(1)
 
     return True
@@ -153,16 +153,15 @@ def backup(destfolder):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage(0)
-        elif test_backupfolder(sys.argv[1]):
-            reqpkgs = ["rsync"]
-            toolzlib.prerequisites(reqpkgs)
-            backup(sys.argv[1])
-        else:
-            print(f"{error} Bad argument\n")
-            usage(1)
-    else:
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) = 1:
         print(f"{error} Need an argument\n")
+        usage(1)
+    elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):
+        reqpkgs = ["rsync"]
+        toolzlib.prerequisites(reqpkgs)
+        backup(sys.argv[1])
+    else:
+        print(f"{error} Bad argument\n")
         usage(1)

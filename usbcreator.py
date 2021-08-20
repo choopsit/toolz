@@ -15,7 +15,7 @@ __author__ = "Choops <choopsbd@gmail.com>"
 
 
 def usage(errcode):
-    myscript = f"{os.path.basename(__file__)}"
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION] <DEVICE>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
@@ -363,28 +363,21 @@ error = f"{ce}E{c0}:"
 done = f"{cok}OK{c0}:"
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage(0)
-        elif os.getuid() != 0:
-            print(f"{error} Need higher privileges\n")
-            exit(1)
-        elif test_device(sys.argv[1]):
-            usbformat = choose_key_format()
-        else:
-            print(f"{error} Bad argument\n")
-            usage(1)
-    else:
-        print(f"{error} Need an argument\n")
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif os.getuid() != 0:
+        print(f"{error} Need higher privileges\n")
+        exit(1)
+    elif test_device(sys.argv[1]):
+        mykey = choose_key_format()
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument\n")
         usage(1)
 
-    if usbformat == 0:
-        create_usbkey(sys.argv[1], "Debian")
-    elif usbformat == 1:
-        create_usbkey(sys.argv[1], "Xubuntu LTS")
-    elif usbformat == 2:
-        create_usbkey(sys.argv[1], "Clonezilla")
-    elif usbformat == 3:
+    mydistros = ["Debian", "Xubuntu LTS", "Clonezilla"]
+    if mykey in [0..2]:
+        create_usbkey(sys.argv[1], mydistros[mykey])
+    elif mykey == 3:
         create_custom_live(sys.argv[1])
-    elif usbformat == 4:
+    elif mykey == 4:
         create_custom_live(sys.argv[1], persistence=True)

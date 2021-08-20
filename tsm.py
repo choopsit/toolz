@@ -24,8 +24,8 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage():
-    myscript = f"{os.path.basename(__file__)}"
+def usage(errcode=0):
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"  {ci}if no option{c0}: Show queue evolution refreshing every 2s")
@@ -39,8 +39,8 @@ def usage():
     print(f"delete downloaded content")
     print(f"  -r,--restart:       Restart daemon")
     print(f"  -s,--status:        Daemon status")
-    print(f"  -t,--test-port:     Test port")
-    print()
+    print(f"  -t,--test-port:     Test port\n")
+    usage(errcode)
 
 
 def show_queue():
@@ -206,7 +206,6 @@ if __name__ == "__main__":
         argid = 0
         if re.match('^-(h|-help)', sys.argv[i]):
             usage()
-            exit(0)
         elif re.match('^-(a|-add)', sys.argv[i]):
             actionid = 1
             argid = i + 1
@@ -226,9 +225,8 @@ if __name__ == "__main__":
         elif re.match('^-(t|-test-port)', sys.argv[i]):
             actionid = 7
         elif re.match('^-', sys.argv[i]):
-            print(f"{error} Unknow option '{sys.argv[i]}'")
-            usage()
-            exit(1)
+            print(f"{error} Unknow option '{sys.argv[i]}'\n")
+            usage(1)
         else:
             positionals.append(sys.argv[i])
         i += 1
@@ -236,12 +234,11 @@ if __name__ == "__main__":
     if len(positionals) > 0:
         badargs = ", ".join(positionals)
         print(f"{error} Unhandled arguments '{badargs}'")
-        usage()
-        exit(1)
+        usage(1)
 
     if len(sys.argv) > 3:
         print(f"{error} Too many arguments")
-        exit(1)
+        usage(1)
 
     reqpkgs = ["transmission-daemon"]
     toolzlib.prerequisites(reqpkgs)

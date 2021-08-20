@@ -22,19 +22,19 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage():
-    myscript = f"{os.path.basename(__file__)}"
+def usage(errcode=0):
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION]' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
-    print(f"  -h,--help: Print this help")
-    print()
+    print(f"  -h,--help: Print this help\n")
+    exit(errcode)
 
 
 def mojave_gtk(gitfolder):
     thurl = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
     thfolder = f"{gitfolder}/mojave-gtk"
-    toolzlib.git_update(thurl, thfolder)
+    toolzlib.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -47,7 +47,7 @@ def catalina_gtk():
     thname = "Os-Catalina-Gtk-night"
     thurl = f"https://github.com/zayronxio/{thname}.git"
     thtarget = f"/usr/share/themes/{thname}"
-    toolzlib.git_update(thurl, thtarget)
+    toolzlib.git.update(thurl, thtarget)
 
     print(f"{done} {thname} theme updated")
 
@@ -55,7 +55,7 @@ def catalina_gtk():
 def mcmojave_cursors(gitfolder):
     thurl = "https://github.com/vinceliuice/McMojave-cursors.git"
     thfolder = f"{gitfolder}/mcmojave-cursors"
-    toolzlib.git_update(thurl, thfolder)
+    toolzlib.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -67,7 +67,7 @@ def mcmojave_cursors(gitfolder):
 def obsidian_icons(gitfolder):
     thurl = "https://github.com/madmaxms/iconpack-obsidian.git"
     thfolder = f"{gitfolder}/obsidian-icons"
-    toolzlib.git_update(thurl, thfolder)
+    toolzlib.git.update(thurl, thfolder)
 
     iconth = "Obsidian"
     mytarget = f"/usr/share/icons/{iconth}"
@@ -86,7 +86,7 @@ def obsidian_icons(gitfolder):
 def fluent_icons(gitfolder):
     thurl = "https://github.com/vinceliuice/Fluent-icon-theme.git"
     thfolder = f"{gitfolder}/fluent-icons"
-    toolzlib.git_update(thurl, thfolder)
+    toolzlib.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -100,7 +100,7 @@ def fluent_icons(gitfolder):
 def kora_icons(gitfolder):
     thurl = "https://github.com/bikass/kora.git"
     thfolder = f"{gitfolder}/kora-icons"
-    toolzlib.git_update(thurl, thfolder)
+    toolzlib.git.update(thurl, thfolder)
 
     mytarget = f"/usr/share/icons/kora"
     mysource = f"{thfolder}/kora"
@@ -118,16 +118,14 @@ def kora_icons(gitfolder):
 if __name__ == "__main__":
     tmpfolder = "/tmp"
 
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage()
-            exit(0)
-        else:
-            print(f"{error} Too many arguments")
-            exit(1)
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) > 1:
+        print(f"{error} Too many arguments\n")
+        exit(1)
 
     if os.getuid() != 0:
-        print(f"{error} Need higher privileges")
+        print(f"{error} Need higher privileges\n")
         exit(1)
 
     reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",

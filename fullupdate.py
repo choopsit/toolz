@@ -23,14 +23,15 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage():
-    myscript = f"{os.path.basename(__file__)}"
+def usage(errcode=0):
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help:           Print this help")
     print(f"  -o,--clean-obsolete: Remove local and obsolete packages")
     print()
+    exit(errcode)
 
 
 def system_upgrade(rmobs):
@@ -114,16 +115,14 @@ if __name__ == "__main__":
     cleanobs = False
     home = pathlib.Path.home()
 
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage()
-            exit(0)
-        elif re.match('^-(o|-clean-obsolete)$', sys.argv[1]):
-            cleanobs = True
-        else:
-            print(f"{error} Bad argument")
-            usage()
-            exit(1)
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) == 2 and \
+        re.match('^-(o|-clean-obsolete)$', sys.argv[1]):
+        cleanobs = True
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument\n")
+        usage(1)
 
     system_upgrade(cleanobs)
     themes_upgrade()

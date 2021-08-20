@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from . import file
 from . import pkg
-from . import sys
+from . import syst
 from . import user
 
 __description__ = "Common functions module"

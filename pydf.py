@@ -19,13 +19,14 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage():
-    myscript = f"{os.path.basename(__file__)}"
+def usage(errcode=0):
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help")
     print(f"  -a,--all:  Show all filesystems including tmpfs\n")
+    exit(errcode)
 
 
 def dim_separator(prop):
@@ -122,15 +123,12 @@ def fs_info():
 if __name__ == "__main__":
     fsregex = 'ext|btrfs|lvm|xfs|zfs|ntfs|vfat|fuseblk|nfs$|nfs4|cifs'
 
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage()
-            exit(0)
-        elif re.match('^-(a|-all)$', sys.argv[1]):
-            fsregex += '|.*tmpfs'
-        else:
-            print(f"{error} Bad argument")
-            usage()
-            exit(1)
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) == 2 and re.match('^-(a|-all)$', sys.argv[1]):
+        fsregex += '|.*tmpfs'
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument\n")
+        usage(1)
 
     fs_info()

@@ -3,7 +3,7 @@
 import os
 import shutil
 from . import file
-from . import sys
+from . import syst
 from . import user
 
 __description__ = "Package management module"
@@ -147,7 +147,7 @@ def upgrade(forceyes=False):
         os.system(cmd)
 
 
-distro = sys.get_distro()
+distro = syst.get_distro()
 debianderivatives = ["debian", "ubuntu", "linuxmint"]
 
 if distro in debianderivatives:

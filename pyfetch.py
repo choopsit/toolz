@@ -26,14 +26,15 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage():
-    myscript = f"{os.path.basename(__file__)}"
+def usage(errcode=0):
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help:         Print this help")
     print(f"  -d,--default-logo: Use default logo")
     print()
+    exit(errcode)
 
 
 def default_logo():
@@ -312,16 +313,13 @@ def show_infos(logo, info):
 if __name__ == "__main__":
     defaultlogo = False
 
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage()
-            exit(0)
-        elif re.match('^-(d|-default-logo)$', sys.argv[1]):
-            defaultlogo = True
-        else:
-            print(f"{error} Bad argument")
-            usage()
-            exit(1)
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) == 2 and re.match('^-(d|-default-logo)$', sys.argv[1]):
+        defaultlogo = True
+    else:
+        print(f"{error} Bad argument")
+        usage(1)
 
     mylogo, mydist = draw_logo(defaultlogo)
     myinfo = pick_infos(mylogo, mydist)
