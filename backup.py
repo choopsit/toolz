@@ -34,46 +34,6 @@ def usage(errcode):
     exit(errcode)
 
 
-def is_sudoer():
-    sudoer = False
-    if os.getuid() != 0:
-        listgrp_cmd = ['groups']
-        issudo_cmd = ['grep', 'sudo']
-        listgrp = subprocess.Popen(listgrp_cmd, stdout=subprocess.PIPE)
-        try:
-            subprocess.check_output(issudo_cmd, stdin=listgrp.stdout)
-            sudoer = True
-        except subprocess.CalledProcessError:
-            print(f"{error} Cannot install requisite package(s).", end=" ")
-            print("Need higher privileges.")
-            exit(1)
-
-    return sudoer
-
-
-def prerequisites():
-    reqpkgs = ["rsync"]
-    missingpkg = False
-    for pkg in reqpkgs:
-        pkglist_cmd = ["dpkg", "-l"]
-        filter_cmd = ["grep", pkg]
-        pkglist = subprocess.Popen(pkglist_cmd, stdout=subprocess.PIPE)
-        try:
-            subprocess.check_output(filter_cmd, stdin=pkglist.stdout,
-                                    universal_newlines=True).rstrip("\n")
-        except subprocess.CalledProcessError:
-            missingpkg = True
-
-    if missingpkg:
-        if is_sudoer():
-            install = "sudo apt-get install"
-        else:
-            install = "apt-get install"
-        print(f"{ci}Installing required packages...{c0}")
-        inst_cmd = f"{install} -yy {' '.join(reqpkgs)}"
-        os.system(inst_cmd)
-
-
 def test_backupfolder(folder):
     forbiddens = ["/", "/bin", "/boot", "/dev", "/etc", "/home", "/initrd.img",
                   "/initrd.img.old", "/lib", "/lib32", "/lib64", "/libx32",
@@ -196,6 +156,8 @@ if __name__ == "__main__":
         if re.match('^-(h|-help)$', sys.argv[1]):
             usage(0)
         elif test_backupfolder(sys.argv[1]):
+            reqpkgs = ["rsync"]
+            toolzlob.requisites(reqpkgs)
             backup(sys.argv[1])
         else:
             print(f"{error} Bad argument\n")

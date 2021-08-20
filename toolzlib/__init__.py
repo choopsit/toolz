@@ -134,16 +134,9 @@ def prerequisites(reqpkgs):
         pcount = "it"
         if len(missingpkgs) > 1:
             pcount = "them"
-        if user.is_in_group(os.getlogin(), 'sudo'):
+        if user.is_sudo():
             if yesno(f"Install {pcount}"):
-                install = "sudo apt-get install"
-                inst_cmd = f"{install} -yy {' '.join(reqpkgs)}"
-                os.system(inst_cmd)
-            else:
-                exit(1)
-        elif os.getuid() == 0:
-            if yesno(f"Install {pcount}"):
-                pkg.install(missingpkgs)
+                pkg.install(reqpkgs, True)
             else:
                 exit(1)
         else:

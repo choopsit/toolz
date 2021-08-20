@@ -60,35 +60,38 @@ def is_installed(pkg):
         return False
 
 
-def install(pkgs):
+def install(pkgs, forceyes=False):
     """Install a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
+    fyes = " -y" if forceyes else ""
 
     cmds = []
     cmds.append(f"{high}{srcupdate}")
-    cmds.append(f"{high}{pkginstall} {' '.join(pkgs)}")
+    cmds.append(f"{high}{pkginstall}{fyes} {' '.join(pkgs)}")
 
     for cmd in cmds:
         os.system(cmd)
 
 
-def remove(pkgs):
+def remove(pkgs, forceyes=False):
     """Remove a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
+    fyes = " -y" if forceyes else ""
 
-    os.system(f"{high}{pkgremove} {' '.join(pkgs)}")
+    os.system(f"{high}{pkgremove}{fyes} {' '.join(pkgs)}")
 
 
-def purge(pkgs):
+def purge(pkgs, forceyes=False):
     """Purge a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
+    fyes = " -y" if forceyes else ""
 
     cmds = []
-    cmds.append(f"{high}{pkgpurge} {' '.join(pkgs)}")
-    cmds.append(f"{high}{unneededremove}")
+    cmds.append(f"{high}{pkgpurge}{fyes} {' '.join(pkgs)}")
+    cmds.append(f"{high}{unneededremove}{fyes}")
 
     for cmd in cmds:
         os.system(cmd)
@@ -106,10 +109,11 @@ def rm_obsoletes():
         purge(obspkgs)
 
 
-def clean():
+def clean(forceyes=False):
     """Remove residual configurations and clean repo cache"""
 
     high = "" if user.is_sudo() else "sudo "
+    fyes = " -y" if forceyes else ""
 
     rcpkgs = []
     listrcpkgs_cmd = f"dpkg -l | grep ^rc"
@@ -120,8 +124,8 @@ def clean():
 
     cmds = []
     if rcpkgs != []:
-        cmds.append(f"{high}{pkgpurge} {' '.join(rcpkgs)}")
-    cmds.append(f"{high}{unneededremove}")
+        cmds.append(f"{high}{pkgpurge}{fyes} {' '.join(rcpkgs)}")
+    cmds.append(f"{high}{unneededremove}{fyes}")
     cmds.append(f"{high}{srcsoftclean}")
     cmds.append(f"{high}{srcclean}")
 
@@ -129,14 +133,15 @@ def clean():
         os.system(cmd)
 
 
-def upgrade():
+def upgrade(forceyes=False):
     """Upgrade distro"""
 
     high = "" if user.is_sudo() else "sudo "
+    fyes = " -y" if forceyes else ""
 
     cmds = []
     cmds.append(f"{high}{srcupdate}")
-    cmds.append(f"{high}{fullupgrade}")
+    cmds.append(f"{high}{fullupgrade}{fyes}")
 
     for cmd in cmds:
         os.system(cmd)
@@ -150,12 +155,12 @@ if distro in debianderivatives:
     srcsoftclean = "apt autoclean 2>/dev/null"
     srcclean = "apt clean 2>/dev/null"
 
-    fullupgrade = "apt full-upgrade -y"
-    unneededremove = "apt autoremove --purge -y"
+    fullupgrade = "apt full-upgrade"
+    unneededremove = "apt autoremove --purge"
 
-    pkginstall = "apt install -y"
-    pkgremove = "apt remove -y"
-    pkgpurge = "apt purge -y"
+    pkginstall = "apt install"
+    pkgremove = "apt remove"
+    pkgpurge = "apt purge"
 
     listpkgs = "dpkg -l | grep ^ii"
     listresidualconf = f"dpkg -l | grep ^rc"
