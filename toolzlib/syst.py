@@ -101,3 +101,68 @@ def add_to_fstab(label, uuid, mntpoint, fstype, options):
     with open("/etc/fstab", "a+") as f:
         if label not in f.read():
             f.write(mntline)
+
+
+def is_valid_hostname(hostname):
+    """Check validity of a string to be used as hostname"""
+
+    if len(hostname) > 255:
+        return False
+
+    if hostname[-1] == ".":
+        hostname = hostname[:-1]
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+
+    return all(allowed.match(x) for x in hostname.split("."))
+
+
+def decompose_fqdn(fqdn):
+    """Split FQDN in hostname and domain"""
+
+    hostname = fqdn.split(".")[0]
+    domain = ".".join(fqdn.split(".")[1:])
+
+    return hostname, domain
+
+
+def set_hostname():
+    """Define a machine hostname"""
+
+    fqdn = socket.getfqdn()
+    if yesno(f"Keep current hostname: '{fqdn}'", "y"):
+        hostname, domain = decompose_fqdn(fqdn)
+    else:
+        newhostname = input("New hostname (or FQDN) ? ")
+        if newhostname == "":
+            print(f"{error} No hostname given")
+            hostname, domain = set_hostname()
+        elif is_valid_hostname(newhostname):
+            hostname, domain = decompose_fqdn(newhostname)
+        else:
+            print(f"{error} Invalid hostname '{newhostname}'")
+            hostname, domain = set_hostname()
+
+    return hostname, domain
+
+
+def renew_hostname(fqdn):
+    """Apply machine naming"""
+
+    hostname, domain = decompose_fqdn(fqdn)
+
+    with open("/etc/hostname", "w") as f:
+        f.write(f"{hostname}\n")
+
+    hostline = f"127.0.1.1\t{hostname}"
+    if domain != "":
+        hostline += f".{domain}\t{hostname}"
+
+    file.overwrite("/etc/hosts", "/tmp/hosts")
+    with open("/tmp/hosts", "r") as oldf, open("/etc/hosts", "w") as newf:
+        for line in oldf:
+            if line.startswith("127.0.1.1"):
+                newf.write(hostline)
+            else:
+                newf.write(line)
+
+    os.system(f"hostname {hostname}")

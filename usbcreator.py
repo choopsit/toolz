@@ -163,7 +163,7 @@ def custom_live_hostname(codename):
     if hostname == "":
         hostname = f"{codename}-custom"
 
-    if not toolzlib.is_valid_hostname(hostname):
+    if not toolzlib.syst.is_valid_hostname(hostname):
         print(f"{error} Invalid hostname '{hostname}'\n")
         hostname = custom_live_hostname()
 
