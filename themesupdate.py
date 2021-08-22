@@ -120,12 +120,11 @@ if __name__ == "__main__":
 
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
+    elif os.getuid() != 0:
+        print(f"{error} Need higher privileges\n")
+        exit(1)
     elif len(sys.argv) > 1:
         print(f"{error} Too many arguments\n")
-        exit(1)
-
-    if os.getuid() != 0:
-        print(f"{error} Need higher privileges\n")
         exit(1)
 
     reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",

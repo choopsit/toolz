@@ -94,13 +94,10 @@ def system_informations(home):
     print(datetime.datetime.today().strftime("%a %b %d, %H:%M:%S"))
     binpath = "/usr/local/bin"
     userbin = f"{home}/.local/bin"
-    scripts = {"pyfetch": "", "tsm": "-t", "vbox": "list", "pydf": ""}
+    scripts = {"pyfetch": "", "tsm": "-t", "pydf": ""}
 
     if not toolzlib.pkg.is_installed("transmission-daemon"):
         scripts.pop("tsm", None)
-
-    if not toolzlib.pkg.is_installed("virtualbox"):
-        scripts.pop("vbox", None)
 
     for script, opt in scripts.items():
         if os.path.exists(f"{binpath}/{script}"):

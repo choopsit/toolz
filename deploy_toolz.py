@@ -28,22 +28,7 @@ def usage(errcode=0):
     exit(errcode)
 
 
-if __name__ == "__main__":
-    if any(arg in sys.argv for arg in ["-h","--help"]):
-        usage()
-    elif len(sys.argv) > 1:
-        print(f"{error} Bad argument\n")
-        usage(1)
-
-    toolzlib.syst.prereq()
-
-    if os.getuid() != 0:
-        print(f"{error} Need higher privileges\n")
-        exit(1)
-
-    src = os.path.dirname(os.path.realpath(__file__))
-    tgt = "/usr/local/bin"
-
+def deploy_lib(src, tgt):
     libsrc = os.path.join(src, "toolzlib")
     libtgt = os.path.join(tgt, "toolzlib")
     if not os.path.isdir(libtgt):
@@ -51,6 +36,8 @@ if __name__ == "__main__":
     if toolzlib.file.overwrite(libsrc, libtgt):
         print(f"{done} 'toolzlib' deployed in '/usr/local/bin'")
 
+
+def deploy_scripts(src, tgt):
     scripts = [f.replace(".py", "") for f in os.listdir(src) if f.endswith(".py")]
     scripts.remove("deploy_toolz")
 
@@ -58,3 +45,22 @@ if __name__ == "__main__":
         if toolzlib.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
     print()
+
+
+if __name__ == "__main__":
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif os.getuid() != 0:
+        print(f"{error} Need higher privileges\n")
+        exit(1)
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument\n")
+        usage(1)
+
+    toolzlib.syst.prereq()
+
+    src = os.path.dirname(os.path.realpath(__file__))
+    tgt = "/usr/local/bin"
+
+    deploy_lib(src, tgt)
+    deploy_scripts(src, tgt)
