@@ -47,5 +47,3 @@ def stat_repo(path):
 def test_repo(path):
     with open(f"{path}/.git/config", "r") as f:
         stat_repo(path)
-
-

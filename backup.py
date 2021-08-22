@@ -160,7 +160,7 @@ if __name__ == "__main__":
         usage(1)
     elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):
         reqpkgs = ["rsync"]
-        toolzlib.prerequisites(reqpkgs)
+        toolzlib.pkg.prerequisites(reqpkgs)
         backup(sys.argv[1])
     else:
         print(f"{error} Bad argument\n")

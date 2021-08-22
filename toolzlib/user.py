@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import toolzlib
+from .base import yesno
 
 __description__ = "User management functions module"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -47,7 +47,7 @@ def is_in_group(user, grp):
 def add_to_group(user, grp):
     """Add '{user}' to group '{grp}'"""
     
-    if toolzlib.yesno(f"Add '{user}' to '{grp}'", "y"):
+    if yesno(f"Add '{user}' to '{grp}'", "y"):
         os.system(f"adduser {user} {grp}")
 
 

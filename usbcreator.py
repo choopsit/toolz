@@ -26,7 +26,7 @@ def usage(errcode):
 def test_device(device):
     reqpkgs = ["btrfs-progs", "lvm2", "isolinux", "live-build", "live-manual",
                "live-tools"]
-    toolzlib.prerequisites(reqpkgs)
+    toolzlib.pkg.prerequisites(reqpkgs)
 
     mydev = f"/dev/{device}"
     if not os.path.exists(mydev):

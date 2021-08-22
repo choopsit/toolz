@@ -118,8 +118,7 @@ def remove_one(tid):
         print(f'{ci}Removing "{tname}"...{c0}')
         if os.system(f"transmission-remote -t {tid} -rad") == 0:
             print(f'{done} "{tid}: {tname}" removed from queue')
-            restartd = input("Restart daemon to reorder IDs [y/N] ? ")
-            if re.match('^(y|yes)$', restartd.lower()):
+            if toolzlib.yesno("Restart daemon to reorder IDs"):
                 restart_daemon()
         else:
             print(f'{error} Failed to remove "{tid}: {tname}"')
@@ -241,6 +240,6 @@ if __name__ == "__main__":
         usage(1)
 
     reqpkgs = ["transmission-daemon"]
-    toolzlib.prerequisites(reqpkgs)
+    toolzlib.pkg.prerequisites(reqpkgs)
 
     do_action(actionid, argid)

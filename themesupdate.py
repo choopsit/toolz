@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",
                "libxml2-utils"]
-    toolzlib.prerequisites(reqpkgs)
+    toolzlib.pkg.prerequisites(reqpkgs)
 
     #mojave_gtk(tmpfolder)
     mcmojave_cursors(tmpfolder)

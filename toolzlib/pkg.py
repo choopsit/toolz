@@ -5,6 +5,7 @@ import shutil
 from . import file
 from . import syst
 from . import user
+from .base import yesno
 
 __description__ = "Package management module"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -166,3 +167,27 @@ if distro in debianderivatives:
     listresidualconf = f"dpkg -l | grep ^rc"
 else:
     print(f"{error} Unsupported distribution '{distro}'")
+
+
+def prerequisites(reqpkgs):
+    missingpkgs = []
+    for rqpkg in reqpkgs:
+        if not is_installed(rqpkg):
+            missingpkgs.append(rqpkg) 
+
+    if missingpkgs:
+        print(f"{warning} Missing package(s): {', '.join(missingpkgs)}")
+        pcount = "it"
+        if len(missingpkgs) > 1:
+            pcount = "them"
+        if user.is_sudo():
+            if yesno(f"Install {pcount}"):
+                install(reqpkgs, True)
+            else:
+                exit(1)
+        else:
+            exit(1)
+        for rqpkg in missingpkgs:
+            if not is_installed(rqpkg):
+                print(f"{error} Needed package not installed\n")
+                exit(1)

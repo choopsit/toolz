@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import toolzlib
+from .base import yesno
 
 __description__ = "System functions module"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -20,7 +20,7 @@ warning = f"{cw}W{c0}:"
 def reboot():
     """Ask for reboot"""
 
-    if not toolzlib.yesno("Reboot now", "y"):
+    if not yesno("Reboot now", "y"):
         os.system("reboot")
 
 
