@@ -2,7 +2,6 @@
 
 import os
 import shutil
-import toolzlib
 
 __description__ = "File management functions module"
 __author__ = "Choops <choopsbd@gmail.com>"
