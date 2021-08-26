@@ -375,7 +375,7 @@ if __name__ == "__main__":
         usage(1)
 
     mydistros = ["Debian", "Xubuntu LTS", "Clonezilla"]
-    if mykey in [0..2]:
+    if mykey in range(len(mydistros)):
         create_usbkey(sys.argv[1], mydistros[mykey])
     elif mykey == 3:
         create_custom_live(sys.argv[1])
