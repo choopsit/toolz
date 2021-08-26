@@ -40,7 +40,7 @@ def usage(errcode=0):
     print(f"  -r,--restart:       Restart daemon")
     print(f"  -s,--status:        Daemon status")
     print(f"  -t,--test-port:     Test port\n")
-    usage(errcode)
+    exit(errcode)
 
 
 def show_queue():

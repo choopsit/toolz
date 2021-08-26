@@ -14,7 +14,7 @@ __description__ = "Create a bootable USB key to install Debian"
 __author__ = "Choops <choopsbd@gmail.com>"
 
 
-def usage(errcode):
+def usage(errcode=0):
     myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION] <DEVICE>' as root or using 'sudo'")
