@@ -91,13 +91,11 @@ def list_ifaces():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if re.match('^-(h|-help)$', sys.argv[1]):
-            usage()
-            exit(0)
-        else:
-            print(f"{error} Too many arguments")
-            exit(1)
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument")
+        usage(1)
 
     get_host_info()
     list_ifaces()
