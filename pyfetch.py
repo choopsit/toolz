@@ -192,6 +192,12 @@ def get_de():
         except KeyError:
             de = "N/A"
 
+    if de == "XFCE":
+        get_xfce_version = "xfce4-about -V 2>/dev/null"
+        for line in os.popen(get_xfce_version).read().split("\n"):
+            if line.startswith("xfce4-about"):
+                de = line.split("(")[1][:-1]
+
     wmchk_cmd = ['update-alternatives', '--list', 'x-window-manager']
     try:
         wm = subprocess.check_output(wmchk_cmd,
