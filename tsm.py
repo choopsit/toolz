@@ -169,77 +169,35 @@ def test_port():
         exit(1)
 
 
-def do_action(myid, myargid):
-    if myid == 0:
-        show_queue()
-    elif myid == 1:
-        if test_torrentfile(sys.argv[myargid]):
-            add_one(sys.argv[myargid])
-    elif myid == 2:
-        add_all()
-    elif myid == 3:
-        if test_torrentid(myargid):
-            remove_one(sys.argv[myargid])
-    elif myid == 4:
-        remove_all()
-    elif myid == 5:
-        restart_daemon()
-    elif myid == 6:
-        daemon_status()
-    elif myid == 7:
-        test_port()
-
-
 myuser = getpass.getuser()
 home = pathlib.Path.home()
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        actionid = 0
-        argid = 0
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    else:
+        reqpkgs = ["transmission-daemon"]
+        toolzlib.pkg.prerequisites(reqpkgs)
 
-    i = 1
-    positionals = []
-    delay = 10
-    while i < len(sys.argv):
-        argid = 0
-        if re.match('^-(h|-help)', sys.argv[i]):
-            usage()
-        elif re.match('^-(a|-add)', sys.argv[i]):
-            actionid = 1
-            argid = i + 1
-            i += 1
-        elif re.match('^-(A|-add-all)', sys.argv[i]):
-            actionid = 2
-        elif re.match('^-(d|-delete)', sys.argv[i]):
-            actionid = 3
-            argid = i + 1
-            i += 1
-        elif re.match('^-(D|-delete-all)', sys.argv[i]):
-            actionid = 4
-        elif re.match('^-(r|-restart)', sys.argv[i]):
-            actionid = 5
-        elif re.match('^-(s|-status)', sys.argv[i]):
-            actionid = 6
-        elif re.match('^-(t|-test-port)', sys.argv[i]):
-            actionid = 7
-        elif re.match('^-', sys.argv[i]):
-            print(f"{error} Unknow option '{sys.argv[i]}'\n")
-            usage(1)
+        if len(sys.argv) == 1:
+            show_queue()
+        elif len(sys.argv) == 2:
+            if sys.argv[1] in ["-A", "--add-all"]:
+                add_all()
+            elif sys.argv[1] in ["-D", "--delete-all"]:
+                remove_all()
+            elif sys.argv[1] in ["-r", "--restart"]:
+                restart_daemon()
+            elif sys.argv[1] in ["-s", "--status"]:
+                daemon_status()
+            elif sys.argv[1] in ["-t", "--test-port"]:
+                test_port()
+        elif len(sys.argv) == 3:
+            if sys.argv[1] in ["-a", "--add"] and test_torrentfile(sys.argv[2]):
+                add_one(sys.argv[2])
+            elif sys.argv[1] in ["-d", "--delete"] and \
+                    test_torrentid(sys.argv[2]):
+                remove_one(sys.argv[2])
         else:
-            positionals.append(sys.argv[i])
-        i += 1
-
-    if len(positionals) > 0:
-        badargs = ", ".join(positionals)
-        print(f"{error} Unhandled arguments '{badargs}'")
-        usage(1)
-
-    if len(sys.argv) > 3:
-        print(f"{error} Too many arguments")
-        usage(1)
-
-    reqpkgs = ["transmission-daemon"]
-    toolzlib.pkg.prerequisites(reqpkgs)
-
-    do_action(actionid, argid)
+            print(f"{error} Bad argument")
+            usage(1)

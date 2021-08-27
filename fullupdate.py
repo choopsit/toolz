@@ -114,8 +114,7 @@ if __name__ == "__main__":
 
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
-    elif len(sys.argv) == 2 and \
-        re.match('^-(o|-clean-obsolete)$', sys.argv[1]):
+    elif len(sys.argv) == 2 and sys.argv[1] in ["-o","--clean-obsolete"]):
         cleanobs = True
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument\n")

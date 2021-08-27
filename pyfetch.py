@@ -4,7 +4,6 @@ import sys
 import apt
 import os
 import shutil
-import re
 import getpass
 import socket
 import platform
@@ -321,7 +320,7 @@ if __name__ == "__main__":
 
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
-    elif len(sys.argv) == 2 and re.match('^-(d|-default-logo)$', sys.argv[1]):
+    elif len(sys.argv) == 2 and sys.argv[1] in ["-d","--default-logo"]:
         defaultlogo = True
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument")

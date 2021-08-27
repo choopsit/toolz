@@ -2,7 +2,6 @@
 
 import socket
 import sys
-import re
 import os
 import subprocess
 import shutil
@@ -124,7 +123,7 @@ if __name__ == "__main__":
         print(f"{error} Need higher privileges\n")
         exit(1)
     elif len(sys.argv) > 1:
-        print(f"{error} Too many arguments\n")
+        print(f"{error} Bad argument\n")
         exit(1)
 
     reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",

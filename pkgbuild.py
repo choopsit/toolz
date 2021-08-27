@@ -48,8 +48,7 @@ def build_deb_package(folder):
 if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
-
-    if os.getuid() != 0:
+    elif os.getuid() != 0:
         print(f"{error} Need higher privileges")
         exit(1)
     elif len(sys.argv) == 2:

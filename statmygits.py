@@ -3,7 +3,6 @@
 import pathlib
 import socket
 import sys
-import re
 import os
 import getpass
 import toolzlib
@@ -32,21 +31,7 @@ def usage(errcode=0):
     exit(errcode)
 
 
-if __name__ == "__main__":
-    gitstock = pathlib.Path().absolute()
-
-    if getpass.getuser() == "choops":
-        home = pathlib.Path.home()
-        gitstock = f"{home}/Work/git"
-
-    if any(arg in sys.argv for arg in ["-h","--help"]):
-        usage()
-    elif len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
-        gitstock = sys.argv[1]
-    elif len(sys.argv) > 2:
-        print(f"{error} Bad argument\n")
-        usage(1)
-
+def get_repos_status(gitstock):
     cpt = 0
     for repo in os.listdir(gitstock):
         path = f"{gitstock}/{repo}"
@@ -58,3 +43,20 @@ if __name__ == "__main__":
     if cpt == 0:
         print(f"{error} No git repo found in '{gitstock}'\n")
         exit(1)
+
+
+if __name__ == "__main__":
+    if any(arg in sys.argv for arg in ["-h","--help"]):
+        usage()
+    elif len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
+        gitstock = sys.argv[1]
+    elif len(sys.argv) == 1:
+        gitstock = pathlib.Path().absolute()
+        if getpass.getuser() == "choops":
+            home = pathlib.Path.home()
+            gitstock = f"{home}/Work/git"
+    elif len(sys.argv) > 1:
+        print(f"{error} Bad argument\n")
+        usage(1)
+
+    get_repos_status(gitstock)
