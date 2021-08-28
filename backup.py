@@ -3,7 +3,6 @@
 import sys
 import os
 import shutil
-import re
 import subprocess
 import datetime
 import socket
@@ -48,7 +47,7 @@ def test_backupfolder(folder):
     if not os.path.exists(folder):
         print(f"{warning} '{folder}' does not exist yet")
         okcreate = input("Create it [Y/n] ? ")
-        if re.match('^(n|no)', okcreate.lower()):
+        if okcreate.lower() in ["n", "no"]:
             exit(0)
         else:
             os.makedirs(folder)

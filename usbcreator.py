@@ -193,7 +193,7 @@ def configure_custom_live():
     print(f"  - {ci}User{c0}:     {user}")
 
     confconf = input("Confirm configuration [Y/n] ? ")
-    if re.match('^(n|no)$', confconf):
+    if confconf.lower() in ["n", "no"]:
         codename, user, hostname = configure_custom_live()
 
     return codename, user, hostname

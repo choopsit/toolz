@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import re
 import os
 
 __description__ = "Show help for scripts deployed from 'choopsit/playground'"
@@ -36,7 +35,7 @@ def print_help():
             continue
         with open(f"/usr/local/bin/{script}", "r") as f:
             for line in f:
-                if re.match('^#!/', line):
+                if line.startswith("#!/"):
                     language = line.split()[1]
                     if language.endswith("sh"):
                         cl = "\33[37m"
@@ -44,9 +43,9 @@ def print_help():
                         cl = "\33[94m"
                     else:
                         cl = "\33[35m"
-                if re.match('.*author.*Choops', line):
+                if line.startswith("__author__") and "Choops" in line:
                     okscript = True
-                if re.match('.*-h,--help', line):
+                if "-h,--help:" in line:
                     okhelp = True
         if okscript and okhelp:
             print(f"{cs}{script}{c0} [{cl}{language}{c0}]:")
