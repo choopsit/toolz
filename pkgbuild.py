@@ -25,7 +25,7 @@ def usage(errcode=0):
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION] <BUILDFOLDER>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
-    print(f"  -h,--help: Print this help")
+    print(f"  -h,--help: Print this help\n")
     exit(errcode)
 
 

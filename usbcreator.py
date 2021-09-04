@@ -233,7 +233,7 @@ def build_iso(codename, user, hostname):
         f.write(f"Name: {codename}-custom"+"\n")
 
     build= "/usr/share/doc/live-build/examples/auto"
-    shutil.copytree(build f"{workfolder}/auto")
+    shutil.copytree(build, f"{workfolder}/auto")
     with open(f"{workfolder}/auto/config", "w") as f:
         f.write('#!/bin/sh\n\n')
         f.write('set -e\n\n')
