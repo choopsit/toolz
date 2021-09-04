@@ -3,6 +3,7 @@
 import os
 import shutil
 import urllib.request
+
 from . import file
 
 __description__ = "Configuration management module"
@@ -20,6 +21,8 @@ warning = f"{cw}W{c0}:"
 
 
 def test_conf(conf_file, test_pattern):
+    """Test if a line starts with a pattern in a configuration file"""
+
     if os.path.isfile(conf_file):
         with open(conf_file, "r") as f:
             for line in f:
@@ -57,10 +60,6 @@ def ssh():
             f.write(f"{rootok_pattern}\n")
 
         os.system("systemctl restart ssh")
-
-
-toolz_folder = os.path.dirname(os.path.realpath(__file__)) 
-conf_srcfolder = f"{toolz_folder}/_resources"
 
 
 def bash(home):
@@ -123,3 +122,7 @@ def root():
     bash("/root")
     vim("/root")
     os.system("update-alternatives --set editor /usr/bin/vim.basic")
+
+
+toolz_folder = os.path.dirname(os.path.realpath(__file__)) 
+conf_srcfolder = f"{toolz_folder}/_resources"

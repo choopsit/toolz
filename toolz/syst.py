@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+
 from .base import yesno
 
 __description__ = "System functions module"
@@ -86,10 +87,8 @@ def is_vm():
 
     testkvm = "lspci | grep -q paravirtual"
     testvbox = "lspci | grep -iq virtualbox"
-    if os.system(testkvm) == 0 or os.system(testvbox) == 0:
-        return True
-    else:
-        return False
+
+    return os.system(testkvm) == 0 or os.system(testvbox) == 0
 
 
 def add_to_fstab(label, uuid, mntpoint, fstype, options):

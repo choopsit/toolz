@@ -18,6 +18,8 @@ warning = f"{cw}W{c0}:"
 
 
 def update(url, folder):
+    """Pull a git repo if avaliable, else clone it"""
+
     if os.path.isdir(folder):
         os.chdir(folder)
         pull_cmd = ["git", "pull", "-q", "--no-rebase"]
@@ -28,6 +30,8 @@ def update(url, folder):
 
 
 def stat_repo(path):
+    """Return git repo status"""
+
     os.chdir(path)
     awk_cmd = "'/^Date:/ {print $2 \" \" $3 \" \" $4 \" \" $6 \" \" $5}'"
     lc_cmd = f"git show | awk {awk_cmd}"
@@ -45,5 +49,7 @@ def stat_repo(path):
 
 
 def test_repo(path):
+    """Test if a folder is a git repo, then get its status"""
+
     with open(f"{path}/.git/config", "r") as f:
         stat_repo(path)

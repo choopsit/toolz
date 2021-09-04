@@ -21,7 +21,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+    myscript = os.path.ame(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION] <BUILDFOLDER>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
@@ -41,7 +41,7 @@ def build_deb_package(folder):
         toolz.file.rchown(target, myuser, mygroup)
 
     destfolder = os.path.abspath(pathlib.Path(folder).parent)
-    pkgname = os.path.basename(folder)
+    pkgname = os.path.ame(folder)
     print(f"{done} '{pkgname}.deb' generated in '{destfolder}'")
 
 

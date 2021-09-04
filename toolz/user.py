@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+
 from .base import yesno
 
 __description__ = "User management functions module"
@@ -35,13 +36,11 @@ def get_list():
 def is_in_group(user, grp):
     """Check if user '{user}' is in group '{grp}'"""
 
-    ret = False
-
     grplist = os.popen(f"groups {user}").read()
     if grp in grplist:
-        ret = True
+        return True
 
-    return ret
+    return False
 
 
 def add_to_group(user, grp):
@@ -54,9 +53,4 @@ def add_to_group(user, grp):
 def is_sudo():
     """Check if script is launched as 'root' or using 'sudo'"""
 
-    ret = False
-
-    if os.getuid() == 0:
-        ret = True
-
-    return ret
+    return os.getuid() == 0

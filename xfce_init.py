@@ -21,7 +21,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+    myscript = os.path.ame(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
@@ -105,16 +105,16 @@ if __name__ == "__main__":
 
     more_pkgs = ""
     if not toolz.syst.is_vm():
-        if toolz.base.yesno("Install Virtual Machine Manager"):
+        if toolz.yesno("Install Virtual Machine Manager"):
             grp_list.append("libvirt")
             inst_pkgs.append("virt-manager")
             more_pkgs += f"  - {ci}virt-manager{c0}\n"
 
-    if toolz.base.yesno("Install Kodi (media center)"):
+    if toolz.yesno("Install Kodi (media center)"):
         inst_pkgs.append("kodi")
         more_pkgs += f"  - {ci}kodi{c0}\n"
 
-    if toolz.base.yesno("Install Steam"):
+    if toolz.yesno("Install Steam"):
         i386needed = True
         inst_pkgs.append("steam")
         more_pkgs += f"  - {ci}steam{c0}\n"
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     userstoadd_list = []
     for user in user_list:
         for grp in grp_list:
-            if toolz.base.yesno("Add user '{user}' to '{grp}'", "y"):
+            if toolz.yesno("Add user '{user}' to '{grp}'", "y"):
                 userstoadd_list.append((user,grp))
 
     if more_pkgs:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     else:
         print(f"{cw}No user added to 'sudo'{c0}")
 
-    if not toolz.base.yesno("Confirm your choices"):
+    if not toolz.yesno("Confirm your choices"):
         exit(0)
 
     if i386needed:

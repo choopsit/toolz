@@ -20,30 +20,26 @@ warning = f"{cw}W{c0}:"
 def overwrite(src, tgt):
     """Overwrite file or folder"""
 
-    ret = True
-
     if os.path.isdir(src):
         if os.path.isdir(tgt):
             shutil.rmtree(tgt)
         try:
             shutil.copytree(src, tgt, symlinks=True)
         except EnvironmentError:
-            ret = False
+            return False
     else:
         if os.path.exists(tgt):
             os.remove(tgt)
         try:
             shutil.copy(src, tgt, follow_symlinks=False)
         except EnvironmentError:
-            ret = False
+            return False
 
-    return ret
+    return True
 
 
 def rcopy(src, tgt):
     """Recursive copy"""
-
-    ret = True
 
     for root, dirs, files in os.walk(src):
         for item in files:
@@ -56,7 +52,8 @@ def rcopy(src, tgt):
                 try:
                     shutil.copy(src_path, dst_path)
                 except EnvironmentError:
-                    ret = False
+                    return False
+
         for item in dirs:
             src_path = os.path.join(root, item)
             dst_path = os.path.join(tgt, src_path.replace(f"{src}/", ""))
@@ -64,18 +61,20 @@ def rcopy(src, tgt):
                 try:
                     os.makedirs(dst_path)
                 except OSError:
-                    ret = False
+                    return False
 
-        return ret
+    return True
 
 
 def rchown(path, newowner=None, newgroup=None):
     """Recursive chown"""
 
     shutil.chown(path, newowner, newgroup)
+
     for dirpath, dirs, files in os.walk(path):
         for mydir in dirs:
             shutil.chown(os.path.join(dirpath, mydir), newowner, newgroup)
+
         for myfile in files:
             shutil.chown(os.path.join(dirpath, myfile), newowner, newgroup)
 
@@ -84,8 +83,10 @@ def rchmod(path, perm):
     """Recursive chmod"""
 
     os.chmod(path, perm)
+
     for root, dirs, files in os.walk(path):
         for mydir in dirs:
             os.chmod(os.path.join(root, mydir), perm)
+
         for myfile in files:
             os.chmod(os.path.join(root, myfile), perm)

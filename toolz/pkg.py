@@ -2,6 +2,7 @@
 
 import os
 import shutil
+
 from . import file
 from . import syst
 from . import user
@@ -37,7 +38,7 @@ def update_sourceslist(distro):
 
                 if okline:
                     lineend = ""
-                    if line.endswith("main\n"):
+                    if line.endswith(" main\n"):
                         lineend = " contrib non-free"
                     tmpf.write(f"{line.strip()}{lineend}\n")
 
@@ -55,10 +56,7 @@ def is_installed(pkg):
             instpkg = instpkg.replace(':amd64','')
         instpkgs.append(instpkg)
 
-    if pkg in instpkgs:
-        return True
-    else:
-        return False
+    return pkg in instpkgs
 
 
 def install(pkgs, forceyes=False):
@@ -99,7 +97,7 @@ def purge(pkgs, forceyes=False):
 
 
 def rm_obsoletes():
-    """emove obsolete packages"""
+    """Remove obsolete packages"""
 
     getobs = f"apt list ?obsolete 2>/dev/null | "
     getobs += "awk  -F'/' '/\/now/ {print $1}'"
@@ -148,28 +146,9 @@ def upgrade(forceyes=False):
         os.system(cmd)
 
 
-distro = syst.get_distro()
-debianderivatives = ["debian", "ubuntu", "linuxmint"]
-
-if distro in debianderivatives:
-    srcupdate = "apt update"
-    srcsoftclean = "apt autoclean 2>/dev/null"
-    srcclean = "apt clean 2>/dev/null"
-
-    fullupgrade = "apt full-upgrade"
-    unneededremove = "apt autoremove --purge"
-
-    pkginstall = "apt install"
-    pkgremove = "apt remove"
-    pkgpurge = "apt purge"
-
-    listpkgs = "dpkg -l | grep ^ii"
-    listresidualconf = f"dpkg -l | grep ^rc"
-else:
-    print(f"{error} Unsupported distribution '{distro}'")
-
-
 def prerequisites(reqpkgs):
+    """Install needed packages if not already installed"""
+
     missingpkgs = []
     for rqpkg in reqpkgs:
         if not is_installed(rqpkg):
@@ -191,3 +170,25 @@ def prerequisites(reqpkgs):
             if not is_installed(rqpkg):
                 print(f"{error} Needed package not installed\n")
                 exit(1)
+
+
+distro = syst.get_distro()
+debianderivatives = ["debian", "ubuntu", "linuxmint"]
+
+if distro in debianderivatives:
+    srcupdate = "apt update"
+    srcsoftclean = "apt autoclean 2>/dev/null"
+    srcclean = "apt clean 2>/dev/null"
+
+    fullupgrade = "apt full-upgrade"
+    unneededremove = "apt autoremove --purge"
+
+    pkginstall = "apt install"
+    pkgremove = "apt remove"
+    pkgpurge = "apt purge"
+
+    listpkgs = "dpkg -l | grep ^ii"
+    listresidualconf = f"dpkg -l | grep ^rc"
+else:
+    print(f"{error} Unsupported distribution '{distro}'")
+    exit(1)

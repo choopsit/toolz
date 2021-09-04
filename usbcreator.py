@@ -15,7 +15,7 @@ __author__ = "Choops <choopsbd@gmail.com>"
 
 
 def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+    myscript = os.path.ame(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  '{myscript} [OPTION] <DEVICE>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
@@ -53,7 +53,7 @@ def test_device(device):
 
 def choose_debian_version():
     vlist = ["stable", "oldstable", "testing"]
-    baseurl = "https://cdimage.debian.org/cdimage"
+    rl = "https://cdimage.debian.org/cdimage"
 
     # check latest stable version at:
     #  https://cdimage.debian.org/cdimage/release/current/amd64/iso-cd
@@ -84,7 +84,7 @@ def choose_debian_version():
     for i in range(len(vlist)):
         if vchoice == i:
             version = vlist[vchoice]
-            isourl = f"{baseurl}/{isos[vchoice]}-amd64-netinst.iso"
+            isourl = f"{rl}/{isos[vchoice]}-amd64-netinst.iso"
     if version == "":
         print(f"{error} Out of range choice '{vchoice}'\n")
         version, isourl = choose_debian_version()
@@ -232,8 +232,8 @@ def build_iso(codename, user, hostname):
         f.write(f"Configuration-Version: 1:{build}"+"\n")
         f.write(f"Name: {codename}-custom"+"\n")
 
-    buildbase = "/usr/share/doc/live-build/examples/auto"
-    shutil.copytree(buildbase, f"{workfolder}/auto")
+    build= "/usr/share/doc/live-build/examples/auto"
+    shutil.copytree(build f"{workfolder}/auto")
     with open(f"{workfolder}/auto/config", "w") as f:
         f.write('#!/bin/sh\n\n')
         f.write('set -e\n\n')

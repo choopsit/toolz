@@ -20,7 +20,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+    myscript = os.path.ame(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  './{myscript} [OPTION]' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
@@ -45,10 +45,13 @@ def deploy_scripts(src, tgt):
 
     for not_to_deploy in ["deploy_toolz", "xfce_init"]:
         scripts.remove(not_to_deploy)
+        print(f"{warning} '{not_to_deploy}.py' not deployed")
 
     for script in scripts:
         if toolz.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
+        else:
+            print(f"{error} '{script}' failed to be deployed")
     print()
 
 

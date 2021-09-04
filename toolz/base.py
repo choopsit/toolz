@@ -21,9 +21,6 @@ def yesno(question, default="n"):
        Return True/False for 'Yes'/'No'"""
     
     defindic = "[y/N]"
-    answer = ""
-    ret = False
-
     if default.lower() == "y":
         defindic = "[Y/n]"
 
@@ -32,9 +29,6 @@ def yesno(question, default="n"):
         answer = default.lower()
     elif not re.match('^(y|yes|n|no)$', answer):
         print(f"{error} Invalid answer '{answer}'")
-        ret = yesno(question, default)
+        return yesno(question, default)
 
-    if answer.startswith("y"):
-        ret = True
-
-    return ret
+    return answer.startswith("y")
