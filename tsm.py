@@ -25,7 +25,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode=0):
-    myscript = os.path.ame(__file__)
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"  {ci}if no option{c0}: Show queue evolution refreshing every 2s")
@@ -70,7 +70,7 @@ def test_torrentfile(myfile):
 
 
 def add_one(torrent):
-    tname = os.path.ame(torrent.rsplit('.', 1)[0])
+    tname = os.path.basename(torrent.rsplit('.', 1)[0])
     print(f"{ci}Adding '{tname}'...{c0}")
     os.system(f'transmission-remote -a "{torrent}"')
     print(f"{done} '{torrent}' added to queue")

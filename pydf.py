@@ -20,7 +20,7 @@ warning = f"{cw}W{c0}:"
 
 
 def usage(errcode=0):
-    myscript = os.path.ame(__file__)
+    myscript = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
