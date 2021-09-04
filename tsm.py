@@ -8,7 +8,7 @@ import pathlib
 import getpass
 import datetime
 import time
-import toolzlib
+import toolz
 
 __description__ = "Make 'transmission-cli' manipulations simplified"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -118,7 +118,7 @@ def remove_one(tid):
         print(f'{ci}Removing "{tname}"...{c0}')
         if os.system(f"transmission-remote -t {tid} -rad") == 0:
             print(f'{done} "{tid}: {tname}" removed from queue')
-            if toolzlib.yesno("Restart daemon to reorder IDs"):
+            if toolz.base.yesno("Restart daemon to reorder IDs"):
                 restart_daemon()
         else:
             print(f'{error} Failed to remove "{tid}: {tname}"')
@@ -133,7 +133,7 @@ def remove_all():
 
 
 def restart_daemon():
-    if toolzlib.user.is_in_group(os.getlogin(), "sudo"):
+    if toolz.user.is_in_group(os.getlogin(), "sudo"):
         print(f"{ci}Restarting daemon...{c0}")
         if os.system("sudo systemctl restart transmission-daemon") == 0:
             print(f"{done} transmission-daemon restarted")
@@ -177,7 +177,7 @@ if __name__ == "__main__":
         usage()
     else:
         reqpkgs = ["transmission-daemon"]
-        toolzlib.pkg.prerequisites(reqpkgs)
+        toolz.pkg.prerequisites(reqpkgs)
 
         if len(sys.argv) == 1:
             show_queue()

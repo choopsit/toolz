@@ -7,7 +7,7 @@ import socket
 import datetime
 import time
 import pathlib
-import toolzlib
+import toolz
 
 __description__ = "Do a full upgrade conclued by system informations"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -38,15 +38,15 @@ def system_upgrade(rmobs):
     print(f"{ci}System upgrade{c0}:")
 
     sudo = ""
-    if not toolzlib.user.is_sudo():
+    if not toolz.user.is_sudo():
         sudo = "sudo "
 
-    toolzlib.pkg.upgrade()
+    toolz.pkg.upgrade()
 
     if rmobs:
-        toolzlib.pkg.rm_obsoletes()
+        toolz.pkg.rm_obsoletes()
 
-    toolzlib.pkg.clean()
+    toolz.pkg.clean()
 
     for file in os.listdir(home):
         if file.startswith(".xsession"):
@@ -96,7 +96,7 @@ def system_informations(home):
     userbin = f"{home}/.local/bin"
     scripts = {"pyfetch": "", "tsm": "-t", "pydf": ""}
 
-    if not toolzlib.pkg.is_installed("transmission-daemon"):
+    if not toolz.pkg.is_installed("transmission-daemon"):
         scripts.pop("tsm", None)
 
     for script, opt in scripts.items():

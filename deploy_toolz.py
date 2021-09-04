@@ -3,7 +3,7 @@
 import os
 import sys
 import re
-import toolzlib
+import toolz
 
 __description__ = "Deploy scripts to '/usr/local/bin'"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -29,20 +29,25 @@ def usage(errcode=0):
 
 
 def deploy_lib(src, tgt):
-    libsrc = os.path.join(src, "toolzlib")
-    libtgt = os.path.join(tgt, "toolzlib")
+    mylib = "toolz"
+    libsrc = os.path.join(src, mylib)
+    libtgt = os.path.join(tgt, mylib)
+
     if not os.path.isdir(libtgt):
         os.makedirs(libtgt)
-    if toolzlib.file.overwrite(libsrc, libtgt):
-        print(f"{done} 'toolzlib' deployed in '/usr/local/bin'")
+
+    if toolz.file.overwrite(libsrc, libtgt):
+        print(f"{done} '{mylib}' deployed in '/usr/local/bin'")
 
 
 def deploy_scripts(src, tgt):
     scripts = [f.replace(".py", "") for f in os.listdir(src) if f.endswith(".py")]
-    scripts.remove("deploy_toolz")
+
+    for not_to_deploy in ["deploy_toolz", "xfce_init"]:
+        scripts.remove(not_to_deploy)
 
     for script in scripts:
-        if toolzlib.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
+        if toolz.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
     print()
 
@@ -57,7 +62,7 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         usage(1)
 
-    toolzlib.syst.prereq()
+    toolz.syst.prereq()
 
     src = os.path.dirname(os.path.realpath(__file__))
     tgt = "/usr/local/bin"

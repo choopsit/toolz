@@ -8,7 +8,7 @@ import datetime
 import socket
 import pathlib
 import getpass
-import toolzlib
+import toolz
 
 __description__ = "Backup important files and folders from home folder and \
 some configuration files"
@@ -159,7 +159,7 @@ if __name__ == "__main__":
         usage(1)
     elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):
         reqpkgs = ["rsync"]
-        toolzlib.pkg.prerequisites(reqpkgs)
+        toolz.pkg.prerequisites(reqpkgs)
         backup(sys.argv[1])
     else:
         print(f"{error} Bad argument\n")

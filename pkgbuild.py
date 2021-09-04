@@ -4,7 +4,7 @@ import re
 import os
 import pathlib
 import shutil
-import toolzlib
+import toolz
 
 __description__ = "Build a debian package"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -33,12 +33,12 @@ def build_deb_package(folder):
     myuser = pathlib.Path(folder).owner()
     mygroup = pathlib.Path(folder).group()
 
-    toolzlib.file.rchown(folder, "root", "root")
+    toolz.file.rchown(folder, "root", "root")
 
     os.system(f"dpkg-deb --build {folder}")
 
     for target in [folder, f"{folder}.deb"]:
-        toolzlib.file.rchown(target, myuser, mygroup)
+        toolz.file.rchown(target, myuser, mygroup)
 
     destfolder = os.path.abspath(pathlib.Path(folder).parent)
     pkgname = os.path.basename(folder)

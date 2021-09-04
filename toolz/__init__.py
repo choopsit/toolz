@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from .base import *
+from . import conf
 from . import file
 from . import git
 from . import pkg

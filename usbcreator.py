@@ -8,7 +8,7 @@ import subprocess
 import urllib.request
 import time
 import datetime
-import toolzlib
+import toolz
 
 __description__ = "Create a bootable USB key to install Debian"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -26,7 +26,7 @@ def usage(errcode=0):
 def test_device(device):
     reqpkgs = ["btrfs-progs", "lvm2", "isolinux", "live-build", "live-manual",
                "live-tools"]
-    toolzlib.pkg.prerequisites(reqpkgs)
+    toolz.pkg.prerequisites(reqpkgs)
 
     mydev = f"/dev/{device}"
     if not os.path.exists(mydev):
@@ -163,7 +163,7 @@ def custom_live_hostname(codename):
     if hostname == "":
         hostname = f"{codename}-custom"
 
-    if not toolzlib.syst.is_valid_hostname(hostname):
+    if not toolz.syst.is_valid_hostname(hostname):
         print(f"{error} Invalid hostname '{hostname}'\n")
         hostname = custom_live_hostname()
 

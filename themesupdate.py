@@ -5,7 +5,7 @@ import sys
 import os
 import subprocess
 import shutil
-import toolzlib
+import toolz
 
 __description__ = "Update GTK themes and icon themes from github"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -33,7 +33,7 @@ def usage(errcode=0):
 def mojave_gtk(gitfolder):
     thurl = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
     thfolder = f"{gitfolder}/mojave-gtk"
-    toolzlib.git.update(thurl, thfolder)
+    toolz.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -46,7 +46,7 @@ def catalina_gtk():
     thname = "Os-Catalina-Gtk-night"
     thurl = f"https://github.com/zayronxio/{thname}.git"
     thtarget = f"/usr/share/themes/{thname}"
-    toolzlib.git.update(thurl, thtarget)
+    toolz.git.update(thurl, thtarget)
 
     print(f"{done} {thname} theme updated")
 
@@ -54,7 +54,7 @@ def catalina_gtk():
 def mcmojave_cursors(gitfolder):
     thurl = "https://github.com/vinceliuice/McMojave-cursors.git"
     thfolder = f"{gitfolder}/mcmojave-cursors"
-    toolzlib.git.update(thurl, thfolder)
+    toolz.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -66,7 +66,7 @@ def mcmojave_cursors(gitfolder):
 def obsidian_icons(gitfolder):
     thurl = "https://github.com/madmaxms/iconpack-obsidian.git"
     thfolder = f"{gitfolder}/obsidian-icons"
-    toolzlib.git.update(thurl, thfolder)
+    toolz.git.update(thurl, thfolder)
 
     iconth = "Obsidian"
     mytarget = f"/usr/share/icons/{iconth}"
@@ -85,7 +85,7 @@ def obsidian_icons(gitfolder):
 def fluent_icons(gitfolder):
     thurl = "https://github.com/vinceliuice/Fluent-icon-theme.git"
     thfolder = f"{gitfolder}/fluent-icons"
-    toolzlib.git.update(thurl, thfolder)
+    toolz.git.update(thurl, thfolder)
 
     os.chdir(thfolder)
     thinst_cmd = ["./install.sh"]
@@ -99,7 +99,7 @@ def fluent_icons(gitfolder):
 def kora_icons(gitfolder):
     thurl = "https://github.com/bikass/kora.git"
     thfolder = f"{gitfolder}/kora-icons"
-    toolzlib.git.update(thurl, thfolder)
+    toolz.git.update(thurl, thfolder)
 
     mytarget = f"/usr/share/icons/kora"
     mysource = f"{thfolder}/kora"
@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",
                "libxml2-utils"]
-    toolzlib.pkg.prerequisites(reqpkgs)
+    toolz.pkg.prerequisites(reqpkgs)
 
     #mojave_gtk(tmpfolder)
     mcmojave_cursors(tmpfolder)

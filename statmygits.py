@@ -5,7 +5,7 @@ import socket
 import sys
 import os
 import getpass
-import toolzlib
+import toolz
 
 __description__ = "Return status of all git repositories stocked in a targetted folder"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -38,7 +38,7 @@ def get_repos_status(gitstock):
         if os.path.isdir(f"{path}/.git"):
             cpt += 1
             print(f"{ci}Repo{c0}: {repo}")
-            toolzlib.git.stat_repo(path)
+            toolz.git.stat_repo(path)
 
     if cpt == 0:
         print(f"{error} No git repo found in '{gitstock}'\n")

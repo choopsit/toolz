@@ -166,3 +166,17 @@ def renew_hostname(fqdn):
                 newf.write(line)
 
     os.system(f"hostname {hostname}")
+
+
+def list_users():
+    """List users having their home directory at '/home/{user}'"""
+
+    userslist = []
+    potential_users = os.listdir("/home")
+    for user in potential_users:
+        with open("/etc/passwd") as f:
+            for line in f:
+                if line.startswith(f"{user}:"):
+                    userslist.append(user)
+
+    return userslist
