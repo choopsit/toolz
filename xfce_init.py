@@ -3,6 +3,7 @@
 import os
 import sys
 import socket
+
 import toolz
 from . import themesupdate
 
@@ -25,12 +26,52 @@ def usage(errcode=0):
     print(f"{ci}{__description__}\nUsage{c0}:")
     print(f"  {myscript} [OPTION]")
     print(f"{ci}Options{c0}:")
-    print(f"  -h,--help:           Print this help")
+    print(f"  -h,--help: Print this help")
     print()
     exit(errcode)
 
 
-def specials():
+def personalization(home):
+    toolz.conf.bash(home)
+    toolz.conf.vim(home)
+
+    if home.startswith("/home/"):
+        user = home.split("/")[-1]
+        with open("/etc/passwd", "r") as f:
+            for line in f:
+                if line startswith(f"{user}:")
+                    group = line.split(":")[4]
+                    toolz.file.rchown(home, user, group)
+
+
+def install_xfce(distro, i386, req_pkgs, useless_pkgs):
+    toolz.pkg.update_sourceslist(distro)
+
+    if i386:
+        os.system("dpkg --add-architecture i386")
+
+    toolz.pkg.install(req_pkgs)
+    toolz.pkg.purge(useless_pkgs)
+
+    themesupdate.mcmojave_cursors("/tmp")
+    themesupdate.catalina_gtk()
+
+    exec(open("./deploy_toolz.py").read())
+
+
+def configure_system(fqdn):
+    if socket.getfqdn() != fqdn:
+        renew_hostname(fqdn)
+
+    toolz.conf.swap()
+    toolz.conf.ssh()
+
+    toolz.conf.root()
+
+    personalization("/etc/skel")
+
+
+def specials(hostname):
     if hostname == "mrchat":
         disks ={
                 "grodix": ["d498cab6-0d80-4b11-9c78-c422cc8ef983",
@@ -72,25 +113,25 @@ if __name__ == "__main__":
         print(f"{error} '{codename}' is a too old Debian version\n")
         exit(1)          
 
-    i386needed = False
+    i386 = False
     grp_list = ["sudo"]
     
-    inst_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop"]
-    inst_pkgs += ["task-xfce-desktop", "task-desktop", "slick-greeter"]
-    inst_pkgs += ["xfce4-appfinder", "xfce4-appmenu-plugin"]
-    inst_pkgs += ["xfce4-clipman-plugin", "xfce4-power-manager"]
-    inst_pkgs += ["xfce4-pulseaudio-plugin", "xfce4-screenshooter"]
-    inst_pkgs += ["xfce4-weather-plugin", "xfce4-whiskermenu-plugin"]
-    inst_pkgs += ["xfce4-xkb-plugin", "catfish", "redshift-gtk"]
-    inst_pkgs += ["gvfs-backends", "network-manager-gnome", "gnome-calculator"]
-    inst_pkgs += ["cups printer-driver-escpr system-config-printer"]
-    inst_pkgs += ["synaptic", "gnome-system-monitor"]
-    inst_pkgs += ["plank", "terminator", "file-roller", "evince"]
-    inst_pkgs += ["gthumb", "gimp", "imagemagick", "simple-scan"]
-    inst_pkgs += ["mpv", "lollypop", "soundconverter", "easytag"]
-    inst_pkgs += ["fonts-noto", "ttf-mscorefonts-installer"]
-    inst_pkgs += ["libreoffice-gtk3", "libreoffice-style-sifr"]
-    inst_pkgs += ["papirus-icon-theme", "greybird-gtk-theme"]
+    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop"]
+    req_pkgs += ["task-xfce-desktop", "task-desktop", "slick-greeter"]
+    req_pkgs += ["xfce4-appfinder", "xfce4-appmenu-plugin"]
+    req_pkgs += ["xfce4-clipman-plugin", "xfce4-power-manager"]
+    req_pkgs += ["xfce4-pulseaudio-plugin", "xfce4-screenshooter"]
+    req_pkgs += ["xfce4-weather-plugin", "xfce4-whiskermenu-plugin"]
+    req_pkgs += ["xfce4-xkb-plugin", "catfish", "redshift-gtk"]
+    req_pkgs += ["gvfs-backends", "network-manager-gnome", "gnome-calculator"]
+    req_pkgs += ["cups printer-driver-escpr system-config-printer"]
+    req_pkgs += ["synaptic", "deborphan", "gnome-system-monitor"]
+    req_pkgs += ["plank", "terminator", "file-roller", "evince"]
+    req_pkgs += ["gthumb", "gimp", "imagemagick", "simple-scan"]
+    req_pkgs += ["mpv", "lollypop", "soundconverter", "easytag"]
+    req_pkgs += ["fonts-noto", "ttf-mscorefonts-installer"]
+    req_pkgs += ["libreoffice-gtk3", "libreoffice-style-sifr"]
+    req_pkgs += ["papirus-icon-theme", "greybird-gtk-theme"]
 
     ff_pkg = "firefox-esr"
     if codename = "sid":
@@ -98,66 +139,77 @@ if __name__ == "__main__":
     inst_pkg.append(ff_pkg)
 
     if os.system("lspci | grep -qi nvidia") == 0:
-        i386needed = True
-        inst_pkgs += ["nvidia-driver", "nvidia-settings", "nvidia-xconfig"]
+        i386 = True
+        req_pkgs += ["nvidia-driver", "nvidia-settings", "nvidia-xconfig"]
 
-    hostname = toolz.syst.set_hostname()
+    hostname, domain = toolz.syst.set_hostname()
+    fqdn = f"{hostname}.{domain}" if domain else hostname
 
     more_pkgs = ""
     if not toolz.syst.is_vm():
         if toolz.yesno("Install Virtual Machine Manager"):
             grp_list.append("libvirt")
-            inst_pkgs.append("virt-manager")
+            req_pkgs.append("virt-manager")
             more_pkgs += f"  - {ci}virt-manager{c0}\n"
 
     if toolz.yesno("Install Kodi (media center)"):
-        inst_pkgs.append("kodi")
+        req_pkgs.append("kodi")
         more_pkgs += f"  - {ci}kodi{c0}\n"
 
     if toolz.yesno("Install Steam"):
-        i386needed = True
-        inst_pkgs.append("steam")
+        i386 = True
+        req_pkgs.append("steam")
         more_pkgs += f"  - {ci}steam{c0}\n"
 
     useless_pkgs = ["xfce4-terminal", "xterm", "termit", "hv3", "xarchiver"]
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
+    useless_pkgs += ["nano"]
 
     user_list = toolz.syst.get-users()
-    userstoadd_list = []
+    users_to_add = []
+    xfce_users = []
     for user in user_list:
         for grp in grp_list:
-            if toolz.yesno("Add user '{user}' to '{grp}'", "y"):
-                userstoadd_list.append((user,grp))
+            if toolz.yesno(f"Add user '{user}' to '{grp}'", "y"):
+                users_to_add.append((user,grp))
+        if toolz.yesno(f"Apply Xfce personalization for {user}"):
+            xfce_users.append(user)
+
+    print()
+
+    if socket.getfqdn() not in [hostname, f"{hostname}.{domain}"]:
+        fqdn = f"{hostname}.{domain}" if domain else hostname
+        print(f"{ci}New hostname/FQDN{c0}: {fqdn}")
 
     if more_pkgs:
         print(f"{ci}Chosen additional applications{c0}:\n{more_pkgs}")
 
-    if userstoadd_list:
+    if users_to_add:
         print(f"{ci} Users to add to groups{c0}:")
-        for user, grp in userstoadd_list:
-            print(f"  - {ci}'{user}' to '{grp}'{c0}")
+        for user, grp in users_to_add:
+            print(f"  - '{user}' to '{grp}'")
     else:
         print(f"{cw}No user added to 'sudo'{c0}")
+
+    if xfce_users:
+        print(f"{ci}Users applying Xfce personalization{c0}:")
+        for user in xfce_users:
+            print(f"  - {user}")
 
     if not toolz.yesno("Confirm your choices"):
         exit(0)
 
-    if i386needed:
-        os.system("dpkg --add-architecture i386")
+    install_xfce(distro, i386, req_pkgs, useless_pkgs)
 
-    toolz.pkg.update_sourceslist(distro)
-    toolz.pkg.install(inst_pkgs)
+    configure_system(fqdn)
 
-    toolz.pkg.purge(useless_pkgs)
-
-    themesupdate.mcmojave_cursors("/tmp")
-    themesupdate.catalina_gtk()
-
-    toolz.conf.root()
-
-    specials()
-
-    for user, grp in userstoadd_list:
+    for user, grp in users_to_add:
         os.system(f"adduser {user} {grp}")
+
+    for user in xfce_users:
+        home = f"/home/{user}"
+        personalization(home)
+
+    specials(hostname)
 
     toolz.syst.reboot()
