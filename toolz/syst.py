@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+import re
+import socket
 
 from .base import yesno
 
@@ -21,7 +23,7 @@ warning = f"{cw}W{c0}:"
 def reboot():
     """Ask for reboot"""
 
-    if not yesno("Reboot now", "y"):
+    if yesno("Reboot now", "y"):
         os.system("reboot")
 
 

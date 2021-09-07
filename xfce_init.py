@@ -5,7 +5,7 @@ import sys
 import socket
 
 import toolz
-from . import themesupdate
+import themesupdate
 
 __description__ = "Install and configure a fully functional XFCE desktop"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -39,8 +39,9 @@ def personalization(home):
         user = home.split("/")[-1]
         with open("/etc/passwd", "r") as f:
             for line in f:
-                if line startswith(f"{user}:")
+                if line.startswith(f"{user}:"):
                     group = line.split(":")[4]
+                    group = group.replace(",,,","")
                     toolz.file.rchown(home, user, group)
 
 
@@ -50,13 +51,16 @@ def install_xfce(distro, i386, req_pkgs, useless_pkgs):
     if i386:
         os.system("dpkg --add-architecture i386")
 
-    toolz.pkg.install(req_pkgs)
-    toolz.pkg.purge(useless_pkgs)
+    toolz.pkg.install(req_pkgs, True)
+    toolz.pkg.purge(useless_pkgs, True)
 
     themesupdate.mcmojave_cursors("/tmp")
     themesupdate.catalina_gtk()
 
-    exec(open("./deploy_toolz.py").read())
+    toolz.pkg.clean(True)
+
+    toolz_path = os.path.dirname(__file__)
+    exec(open(f"{toolz_path}/deploy_toolz.py").read())
 
 
 def configure_system(fqdn):
@@ -67,6 +71,11 @@ def configure_system(fqdn):
     toolz.conf.ssh()
 
     toolz.conf.root()
+
+    toolz.conf.lightdm()
+    toolz.conf.networkmanager()
+    toolz.conf.pulseaudio()
+    toolz.conf.redshift()
 
     personalization("/etc/skel")
 
@@ -95,9 +104,11 @@ def specials(hostname):
 
 
 if __name__ == "__main__":
+    distro = toolz.syst.get_distro()
+
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
-    elif toolz.syst.get_distro()!= "debian":
+    elif distro != "debian":
         print(f"{error} OS is not Debian\n")                                     
         exit(1)          
     elif os.getuid() != 0:
@@ -134,9 +145,9 @@ if __name__ == "__main__":
     req_pkgs += ["papirus-icon-theme", "greybird-gtk-theme"]
 
     ff_pkg = "firefox-esr"
-    if codename = "sid":
+    if codename == "sid":
         ff_pkg = "firefox"
-    inst_pkg.append(ff_pkg)
+    req_pkgs.append(ff_pkg)
 
     if os.system("lspci | grep -qi nvidia") == 0:
         i386 = True
@@ -152,6 +163,10 @@ if __name__ == "__main__":
             req_pkgs.append("virt-manager")
             more_pkgs += f"  - {ci}virt-manager{c0}\n"
 
+    if toolz.yesno("Install transmission-daemon (torrent client)"):
+        req_pkgs.append("transmission-daemon")
+        more_pkgs += f"  - {ci}transmission-daemon{c0}\n"
+
     if toolz.yesno("Install Kodi (media center)"):
         req_pkgs.append("kodi")
         more_pkgs += f"  - {ci}kodi{c0}\n"
@@ -165,39 +180,43 @@ if __name__ == "__main__":
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
     useless_pkgs += ["nano"]
 
-    user_list = toolz.syst.get-users()
+    user_list = toolz.syst.list_users()
     users_to_add = []
     xfce_users = []
     for user in user_list:
         for grp in grp_list:
-            if toolz.yesno(f"Add user '{user}' to '{grp}'", "y"):
-                users_to_add.append((user,grp))
+            if not toolz.user.is_in_group(user, grp):
+                if toolz.yesno(f"Add user '{user}' to '{grp}'", "y"):
+                    users_to_add.append((user,grp))
         if toolz.yesno(f"Apply Xfce personalization for {user}"):
             xfce_users.append(user)
 
     print()
 
+    my_conf = ""
     if socket.getfqdn() not in [hostname, f"{hostname}.{domain}"]:
         fqdn = f"{hostname}.{domain}" if domain else hostname
-        print(f"{ci}New hostname/FQDN{c0}: {fqdn}")
+        my_conf += f"{ci}New hostname/FQDN{c0}: {fqdn}\n"
 
     if more_pkgs:
-        print(f"{ci}Chosen additional applications{c0}:\n{more_pkgs}")
+        my_conf += f"{ci}Chosen additional applications{c0}:\n{more_pkgs}"
 
     if users_to_add:
-        print(f"{ci} Users to add to groups{c0}:")
+        my_conf += f"{ci} Users to add to groups{c0}:\n"
         for user, grp in users_to_add:
-            print(f"  - '{user}' to '{grp}'")
-    else:
-        print(f"{cw}No user added to 'sudo'{c0}")
+            my_conf = f"  - '{user}' to '{grp}'\n"
 
     if xfce_users:
-        print(f"{ci}Users applying Xfce personalization{c0}:")
+        my_conf = f"{ci}Users applying Xfce personalization{c0}:\n"
         for user in xfce_users:
-            print(f"  - {user}")
+            my_conf += f"  - {user}\n"
 
-    if not toolz.yesno("Confirm your choices"):
-        exit(0)
+    if my_conf:
+        print(my_conf)
+        if not toolz.yesno("Confirm your choices"):
+            exit(0)
+
+    print()
 
     install_xfce(distro, i386, req_pkgs, useless_pkgs)
 
@@ -209,6 +228,9 @@ if __name__ == "__main__":
     for user in xfce_users:
         home = f"/home/{user}"
         personalization(home)
+
+        if (user, "libvirt") in users_to_add:
+            toolz.conf.tansmission(user, home)
 
     specials(hostname)
 
