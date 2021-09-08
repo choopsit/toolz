@@ -129,7 +129,7 @@ if __name__ == "__main__":
     i386 = False
     grp_list = ["sudo"]
     
-    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop"]
+    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop", "nfs-common"]
     req_pkgs += ["task-xfce-desktop", "task-desktop", "slick-greeter"]
     req_pkgs += ["xfce4-appfinder", "xfce4-appmenu-plugin"]
     req_pkgs += ["xfce4-clipman-plugin", "xfce4-power-manager"]
