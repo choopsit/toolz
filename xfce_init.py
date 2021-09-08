@@ -34,6 +34,7 @@ def usage(errcode=0):
 def personalization(home):
     toolz.conf.bash(home)
     toolz.conf.vim(home)
+    toolz.conf.xfce(home)
 
     if home.startswith("/home/"):
         user = home.split("/")[-1]
@@ -56,6 +57,7 @@ def install_xfce(distro, i386, req_pkgs, useless_pkgs):
 
     themesupdate.mcmojave_cursors("/tmp")
     themesupdate.catalina_gtk()
+    toolz.conf.gruvbox_gtk()
 
     toolz.pkg.clean(True)
 
@@ -161,20 +163,20 @@ if __name__ == "__main__":
         if toolz.yesno("Install Virtual Machine Manager"):
             grp_list.append("libvirt")
             req_pkgs.append("virt-manager")
-            more_pkgs += f"  - {ci}virt-manager{c0}\n"
+            more_pkgs += f"  {cw}-{c0} virt-manager\n"
 
     if toolz.yesno("Install transmission-daemon (torrent client)"):
         req_pkgs.append("transmission-daemon")
-        more_pkgs += f"  - {ci}transmission-daemon{c0}\n"
+        more_pkgs += f"  {cw}-{c0} transmission-daemon\n"
 
     if toolz.yesno("Install Kodi (media center)"):
         req_pkgs.append("kodi")
-        more_pkgs += f"  - {ci}kodi{c0}\n"
+        more_pkgs += f"  {cw}-{c0} kodi\n"
 
     if toolz.yesno("Install Steam"):
         i386 = True
         req_pkgs.append("steam")
-        more_pkgs += f"  - {ci}steam{c0}\n"
+        more_pkgs += f"  {cw}-{c0} steam\n"
 
     useless_pkgs = ["xfce4-terminal", "xterm", "termit", "hv3", "xarchiver"]
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
@@ -204,12 +206,12 @@ if __name__ == "__main__":
     if users_to_add:
         my_conf += f"{ci} Users to add to groups{c0}:\n"
         for user, grp in users_to_add:
-            my_conf = f"  - '{user}' to '{grp}'\n"
+            my_conf += f"  {cw}-{c0} '{user}' to '{grp}'\n"
 
     if xfce_users:
-        my_conf = f"{ci}Users applying Xfce personalization{c0}:\n"
+        my_conf += f"{ci}Users applying Xfce personalization{c0}:\n"
         for user in xfce_users:
-            my_conf += f"  - {user}\n"
+            my_conf += f"  {cw}-{c0} {user}\n"
 
     if my_conf:
         print(my_conf)
@@ -229,8 +231,9 @@ if __name__ == "__main__":
         home = f"/home/{user}"
         personalization(home)
 
-        if (user, "libvirt") in users_to_add:
-            toolz.conf.tansmission(user, home)
+        if toolz.user.is_in_group(user, "libvirt") or \
+                (user, "libvirt") in users_to_add:
+            toolz.conf.tansmissiond(user, home)
 
     specials(hostname)
 

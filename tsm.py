@@ -65,7 +65,7 @@ def test_torrentfile(myfile):
     if os.path.isfile(myfile) and myfile.endswith(".torrent"):
         return True
     else:
-        print(f'{error} "{myfile}" is not a valid torrent file')
+        print(f'{error} "{myfile}" is not a valid torrent file\n')
         exit(1)
 
 
@@ -90,8 +90,10 @@ def add_all():
         for newtorrent in tlist:
             add_one(newtorrent)
     else:
-        print(f'{error} No torrent file in "~/Downloads"')
+        print(f'{error} No torrent file in "~/Downloads"\n')
         exit(1)
+
+    print()
 
 
 def test_torrentid(myid):
@@ -121,9 +123,9 @@ def remove_one(tid):
             if toolz.yesno("Restart daemon to reorder IDs"):
                 restart_daemon()
         else:
-            print(f'{error} Failed to remove "{tid}: {tname}"')
+            print(f'{error} Failed to remove "{tid}: {tname}"\n')
     else:
-        print(f"{error} No torrent with ID {tid}")
+        print(f"{error} No torrent with ID {tid}\n")
 
 
 def remove_all():
@@ -131,14 +133,16 @@ def remove_all():
         if type(tid) == int:
             remove_one(tid)
 
+    print()
+
 
 def restart_daemon():
     if toolz.user.is_in_group(os.getlogin(), "sudo"):
         print(f"{ci}Restarting daemon...{c0}")
         if os.system("sudo systemctl restart transmission-daemon") == 0:
-            print(f"{done} transmission-daemon restarted")
+            print(f"{done} transmission-daemon restarted\n")
     else:
-        print(f"{error} '{myuser}' can not restart transmission-daemon")
+        print(f"{error} '{myuser}' can not restart transmission-daemon\n")
 
 
 def daemon_status():
@@ -150,7 +154,7 @@ def test_port():
     tsmconf = f"{home}/.config/transmission-daemon/settings.json"
 
     if not os.path.isfile(tsmconf):
-        print(f"{error} Can not find transmission-daemon configuration file")
+        print(f"{error} Can not find transmission-daemon configuration file\n")
         exit(1)
 
     port = ""
@@ -195,9 +199,11 @@ if __name__ == "__main__":
         elif len(sys.argv) == 3:
             if sys.argv[1] in ["-a", "--add"] and test_torrentfile(sys.argv[2]):
                 add_one(sys.argv[2])
+                print()
             elif sys.argv[1] in ["-d", "--delete"] and \
                     test_torrentid(sys.argv[2]):
                 remove_one(sys.argv[2])
+                print()
         else:
-            print(f"{error} Bad argument")
+            print(f"{error} Bad argument\n")
             usage(1)

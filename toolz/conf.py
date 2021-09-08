@@ -19,6 +19,9 @@ error = f"{ce}E{c0}:"
 done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
+toolz_folder = os.path.dirname(os.path.realpath(__file__))
+conf_srcfolder = f"{toolz_folder}/_resources"
+
 
 def test_conf(conf_file, test_pattern):
     """Test if a line starts with a pattern in a configuration file"""
@@ -73,20 +76,23 @@ def bash(home):
     if not os.path.isdir(bash_cfg):
         os.makedirs(bash_cfg)
 
-    if os.path.isfile(f"{home}/.bashrc"):
-        os.remove(f"{home}/.bashrc")
+    old_bashrc = f"{home}/.bashrc"
+    if os.path.isfile(old_bashrc):
+        os.remove(old_bashrc)
 
     for bash_file in ["aliases", "history", "logout"]:
         bash_file_orig = f"{home}/.bash_{bash_file}"
+        bash_file_tgt = f"{bash_cfg}/{bash_file}"
         if os.path.isfile(bash_file_orig):
-            shutil.move(bash_file_orig, f"{bash_cfg}/{bash_file}")
+            shutil.move(bash_file_orig, bash_file_tgt)
 
     if home == "/root":
         bashrc_src = f"{bash_src}/bashrc_root"
     else:
         bashrc_src = f"{bash_src}/bashrc_user"
 
-    file.overwrite(bashrc_src, f"{bash_cfg}/bashrc")
+    bashrc_tgt = f"{bash_cfg}/bashrc"
+    file.overwrite(bashrc_src, bashrc_tgt)
 
 
 def vim(home):
@@ -110,7 +116,8 @@ def vim(home):
 
     rawgit_url = "https://raw.githubusercontent.com/"
     plug_url = f"{rawgit_url}junegunn/vim-plug/master/plug.vim"
-    urllib.request.urlretrieve(plug_url, f"{plug_folder}/plug.vim")
+    plug_tgt = f"{plug_folder}/plug.vim"
+    urllib.request.urlretrieve(plug_url, plug_tgt)
 
     if home == "/root":
         os.system("vim +PlugInstall +qall")
@@ -214,20 +221,79 @@ def transmissiond(user, home):
     os.system("systemctl start transmission-daemon")
     os.system("systemctl stop transmission-daemon")
 
-    tsmd_userconf = f"{home}/.config/transmission-daemon/settings.json"
-    if os.path.isfile(tsmd_userconf):
-        tmpfile = "/tmp/tsmdsettings.json"
-        file.overwrite(tsmd_userconf, tmp_file)
-        with open(tmp_file, "r") as oldf, open(tsmd_userconf, "w") as newf:
-            for line in oldf:
-                if '"peer-port"' in line:
-                    newf.write('    "peer-port": 57413,\n')
-                else:
-                    newf.write(line)
+    tsmd_conf_dir = f"{home}/.config/transmission-daemon"
+    tsmd_userconf = f"{tsmd_conf_dir}/settings.json"
+    tsmd_conf_orig = "/var/lib/transmission-daemon/info/settings.json"
+
+    if not os.path.isdir(tsmd_conf_dir):
+        os.makedirs(tsmd_conf_dir)
+
+    if not os.path.isfile(tsmd_userconf):
+        shutil.copy(tsmd_conf_orig, tsmd_userconf)
+
+    tmp_file = "/tmp/tsmdsettings.json"
+    file.overwrite(tsmd_userconf, tmp_file)
+    with open(tmp_file, "r") as oldf, open(tsmd_userconf, "w") as newf:
+        for line in oldf:
+            if '"peer-port"' in line:
+                newf.write('    "peer-port": 57413,\n')
+            else:
+                newf.write(line)
 
     os.system("systemctl daemon-reload")
     os.system("systemctl start transmission-daemon")
 
 
-toolz_folder = os.path.dirname(os.path.realpath(__file__)) 
-conf_srcfolder = f"{toolz_folder}/_resources"
+def gruvbox_gtk():
+    """Add gruvbox color scheme for gtk applications"""
+
+    gruvbox_styles = ["gruvbox-dark.xml", "gruvbox-light.xml"]
+
+    for style in gruvbox_styles:
+        style_url = "https://raw.githubusercontent.com/morhetz/"
+        style_url += f"gruvbox-contrib/master/gedit/{style}"
+        style_tgts = []
+        style_tgts.append(f"/usr/share/gtksourceview-3.0/styles/{style}")
+        style_tgts.append(style_tgts[0].replace("3.0", "4"))
+        for style_tgt in style_tgts:
+            if not os.path.exists(style_tgt):
+                urllib.request.urlretrieve(style_url, style_tgt)
+                print(f"{done} '{style}' deployed")
+
+
+def xfce(home):
+    "Apply default 'xfce' configuration for user"
+
+    git_dir = f"{home}/Work/git"
+
+    if not os.path.isdir(git_dir):
+        os.makedirs(git_dir)
+
+    conf_dict = {
+            "Xfce": "xfce4/xfconf/xfce-perchannel-xml",
+            "Thunar": "Thunar",
+            "Mousepad": "Mousepad",
+            "Plank": "plank",
+            "Terminator": "terminator",
+            "Autostarts": "autostart"
+            }
+
+    for soft, soft_conf in conf_dict.items():
+        conf_src = f"{conf_srcfolder}/config/{soft_conf}"
+        conf_tgt = f"{home}/.config/{soft_conf}"
+        if not os.path.exists(conf_tgt):
+            os.makedirs(conf_tgt)
+        file.overwrite(conf_src, conf_tgt)
+        print(f"{done} {soft} configuration deployed in '{home}/.config'")
+
+    locshare_dict = {
+            "Plank": "plank"
+            }
+
+    for soft, soft_locshare in locshare_dict.items():
+        conf_src = f"{conf_srcfolder}/local/share/{soft_locshare}"
+        conf_tgt = f"{home}/.local/share/{soft_locshare}"
+        if not os.path.exists(conf_tgt):
+            os.makedirs(conf_tgt)
+        file.overwrite(conf_src, conf_tgt)
+        print(f"{done} {soft} specifications deployed in '{home}/.local/share'")
