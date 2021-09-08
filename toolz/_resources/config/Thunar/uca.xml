@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<unique-id>1573311719330644-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Example for a custom action</description>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>object-unlocked</icon>
+	<name>Open as root</name>
+	<unique-id>1573391613509041-1</unique-id>
+	<command>pkexec thunar %f</command>
+	<description></description>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>view-list-video</icon>
+	<name>Video Metadata</name>
+	<unique-id>1575659057947850-1</unique-id>
+	<command>ffmpeg -i %f  2&gt;&amp;1 | grep -e Stream -e Duration -e Input | zenity --width=480 --height=320 --text-info --title %n</command>
+	<description></description>
+	<patterns>*</patterns>
+	<video-files/>
+</action>
+<action>
+	<icon>edit-find</icon>
+	<name>Search Here</name>
+	<unique-id>1575659447585122-2</unique-id>
+	<command>catfish --path=%f</command>
+	<description></description>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+</actions>
