@@ -130,7 +130,7 @@ def vim(home):
 
         file.overwrite(vimrc, tmp_file)
 
-        with open(tmp_file, "r") as oldf, open(vimrc, "w"):
+        with open(tmp_file, "r") as oldf, open(vimrc, "w") as newf:
             for line in oldf:
                 if not "gruvbox" in line:
                     newf.write(line)
