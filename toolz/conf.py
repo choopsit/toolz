@@ -56,6 +56,7 @@ def ssh():
     sshconf_rootok = f"{sshconf_base}.d/allow_root.conf"
 
     rootok_pattern = "PermitRootLogin yes"
+
     if not test_conf(sshconf_base, rootok_pattern) and \
             not test_conf(sshconf_rootok, rootok_pattern):
         with open(sshconf_rootok, "a") as f:
@@ -77,12 +78,14 @@ def bash(home):
         os.makedirs(bash_cfg)
 
     old_bashrc = f"{home}/.bashrc"
+
     if os.path.isfile(old_bashrc):
         os.remove(old_bashrc)
 
     for bash_file in ["aliases", "history", "logout"]:
         bash_file_orig = f"{home}/.bash_{bash_file}"
         bash_file_tgt = f"{bash_cfg}/{bash_file}"
+
         if os.path.isfile(bash_file_orig):
             shutil.move(bash_file_orig, bash_file_tgt)
 
@@ -92,6 +95,7 @@ def bash(home):
         bashrc_src = f"{bash_src}/bashrc_user"
 
     bashrc_tgt = f"{bash_cfg}/bashrc"
+
     file.overwrite(bashrc_src, bashrc_tgt)
 
 
@@ -111,6 +115,7 @@ def vim(home):
     file.overwrite(vim_src, vim_cfg)
 
     plug_folder = f"{vim_cfg}/autoload"
+
     if not os.path.isdir(plug_folder):
         os.makedirs(plug_folder)
 
@@ -120,6 +125,16 @@ def vim(home):
     urllib.request.urlretrieve(plug_url, plug_tgt)
 
     if home == "/root":
+        vimrc = f"{vim_cfg}/vimrc"
+        tmp_file = "/tmp/vimrc"
+
+        file.overwrite(vimrc, tmp_file)
+
+        with open(tmp_file, "r") as oldf, open(vimrc, "w"):
+            for line in oldf:
+                if not "gruvbox" in line:
+                    newf.write(line)
+
         os.system("vim +PlugInstall +qall")
 
 
@@ -141,6 +156,7 @@ def lightdm():
 
     if os.path.isfile(lightdm_conf):
         file.overwrite(lightdm_conf, tmp_file)
+
         with open(tmp_file, "r") as oldf, open(lightdm_conf, "a") as newf:
             for line in newlines:
                 if line not in oldf:
@@ -157,7 +173,9 @@ def networkmanager():
     nw_conf = "/etc/network/interfaces"
     iface = os.popen("ip r | grep default").read().split()[4]
     tmp_file = "/tmp/interfaces"
+
     file.overwrite(nw_conf, tmp_file)
+
     with open(tmp_file, "r") as oldf, open(nw_conf, "w") as newf:
         for line in oldf:
             if iface in line:
@@ -171,13 +189,17 @@ def pulseaudio():
 
     pulse_conf = "/etc/pulse/daemon.conf"
     pulse_ok = False
+
     with open(pulse_conf, "r") as f:
         for line in f:
             if line.startswith("flat-volumes = no"):
                 pulse_ok = True
+
     if not pulse_ok:
         tmp_file = "/tmp/pulse_daemon.conf"
+
         file.overwrite(pulse_conf, tmp_file)
+
         with open(tmp_file, "r") as oldf, open(pulse_conf, "w") as newf:
             for line in oldf:
                 if "flat-volumes" in line:
@@ -232,7 +254,9 @@ def transmissiond(user, home):
         shutil.copy(tsmd_conf_orig, tsmd_userconf)
 
     tmp_file = "/tmp/tsmdsettings.json"
+
     file.overwrite(tsmd_userconf, tmp_file)
+
     with open(tmp_file, "r") as oldf, open(tsmd_userconf, "w") as newf:
         for line in oldf:
             if '"peer-port"' in line:
@@ -281,19 +305,25 @@ def xfce(home):
     for soft, soft_conf in conf_dict.items():
         conf_src = f"{conf_srcfolder}/config/{soft_conf}"
         conf_tgt = f"{home}/.config/{soft_conf}"
+
         if not os.path.exists(conf_tgt):
             os.makedirs(conf_tgt)
+
         file.overwrite(conf_src, conf_tgt)
+
         print(f"{done} {soft} configuration deployed in '{home}/.config'")
 
-    locshare_dict = {
-            "Plank": "plank"
-            }
+    #locshare_dict = {
+    #        "Plank": "plank"
+    #        }
 
-    for soft, soft_locshare in locshare_dict.items():
-        conf_src = f"{conf_srcfolder}/local/share/{soft_locshare}"
-        conf_tgt = f"{home}/.local/share/{soft_locshare}"
-        if not os.path.exists(conf_tgt):
-            os.makedirs(conf_tgt)
-        file.overwrite(conf_src, conf_tgt)
-        print(f"{done} {soft} specifications deployed in '{home}/.local/share'")
+    #for soft, soft_locshare in locshare_dict.items():
+    #    conf_src = f"{conf_srcfolder}/local/share/{soft_locshare}"
+    #    conf_tgt = f"{home}/.local/share/{soft_locshare}"
+    #
+    #    if not os.path.exists(conf_tgt):
+    #        os.makedirs(conf_tgt)
+    #
+    #    file.overwrite(conf_src, conf_tgt)
+    #
+    #    print(f"{done} {soft} specifications deployed in '{home}/.local/share'")

@@ -38,6 +38,7 @@ def personalization(home):
 
     if home.startswith("/home/"):
         user = home.split("/")[-1]
+
         with open("/etc/passwd", "r") as f:
             for line in f:
                 if line.startswith(f"{user}:"):
@@ -62,6 +63,7 @@ def install_xfce(distro, i386, req_pkgs, useless_pkgs):
     toolz.pkg.clean(True)
 
     toolz_path = os.path.dirname(__file__)
+
     exec(open(f"{toolz_path}/deploy_toolz.py").read())
 
 
@@ -122,6 +124,7 @@ if __name__ == "__main__":
 
     codename = toolz.syst.get_codename()
     valid_codenames = ["bullseye", "bookworm", "sid"]
+
     if codename not in valid_codenames:
         print(f"{error} '{codename}' is a too old Debian version\n")
         exit(1)          
@@ -144,29 +147,36 @@ if __name__ == "__main__":
     req_pkgs += ["mpv", "lollypop", "soundconverter", "easytag"]
     req_pkgs += ["fonts-noto", "ttf-mscorefonts-installer"]
     req_pkgs += ["libreoffice-gtk3", "libreoffice-style-sifr"]
-    req_pkgs += ["papirus-icon-theme", "greybird-gtk-theme"]
+    req_pkgs += ["papirus-icon-theme", "greybird-gtk-theme", "libxml2-utils"]
+    req_pkgs += ["sassc", "libcanberra-gtk-module", "libglib2.0-dev"]
 
     ff_pkg = "firefox-esr"
+
     if codename == "sid":
         ff_pkg = "firefox"
+
     req_pkgs.append(ff_pkg)
 
     if os.system("lspci | grep -qi nvidia") == 0:
         i386 = True
         req_pkgs += ["nvidia-driver", "nvidia-settings", "nvidia-xconfig"]
 
+    print(f"{ci}A few questions to adapt installation to your needs{c0}:")
+
     hostname, domain = toolz.syst.set_hostname()
     fqdn = f"{hostname}.{domain}" if domain else hostname
 
     more_pkgs = ""
+
     if not toolz.syst.is_vm():
         if toolz.yesno("Install Virtual Machine Manager"):
-            grp_list.append("libvirt")
             req_pkgs.append("virt-manager")
+            grp_list.append("libvirt")
             more_pkgs += f"  {cw}-{c0} virt-manager\n"
 
     if toolz.yesno("Install transmission-daemon (torrent client)"):
         req_pkgs.append("transmission-daemon")
+        grp_list.append("debian-transmission")
         more_pkgs += f"  {cw}-{c0} transmission-daemon\n"
 
     if toolz.yesno("Install Kodi (media center)"):
@@ -185,17 +195,20 @@ if __name__ == "__main__":
     user_list = toolz.syst.list_users()
     users_to_add = []
     xfce_users = []
+
     for user in user_list:
         for grp in grp_list:
             if not toolz.user.is_in_group(user, grp):
                 if toolz.yesno(f"Add user '{user}' to '{grp}'", "y"):
                     users_to_add.append((user,grp))
+
         if toolz.yesno(f"Apply Xfce personalization for {user}"):
             xfce_users.append(user)
 
     print()
 
     my_conf = ""
+
     if socket.getfqdn() not in [hostname, f"{hostname}.{domain}"]:
         fqdn = f"{hostname}.{domain}" if domain else hostname
         my_conf += f"{ci}New hostname/FQDN{c0}: {fqdn}\n"
@@ -204,17 +217,20 @@ if __name__ == "__main__":
         my_conf += f"{ci}Chosen additional applications{c0}:\n{more_pkgs}"
 
     if users_to_add:
-        my_conf += f"{ci} Users to add to groups{c0}:\n"
+        my_conf += f"{ci}Users to add to groups{c0}:\n"
+
         for user, grp in users_to_add:
-            my_conf += f"  {cw}-{c0} '{user}' to '{grp}'\n"
+            my_conf += f"  {cw}-{c0} {user} {ci}to{c0} {grp}\n"
 
     if xfce_users:
         my_conf += f"{ci}Users applying Xfce personalization{c0}:\n"
+
         for user in xfce_users:
             my_conf += f"  {cw}-{c0} {user}\n"
 
     if my_conf:
         print(my_conf)
+
         if not toolz.yesno("Confirm your choices"):
             exit(0)
 
@@ -231,9 +247,9 @@ if __name__ == "__main__":
         home = f"/home/{user}"
         personalization(home)
 
-        if toolz.user.is_in_group(user, "libvirt") or \
-                (user, "libvirt") in users_to_add:
-            toolz.conf.tansmissiond(user, home)
+        if toolz.user.is_in_group(user, "debian-transmission") or \
+                (user,"debian-transmission") in users_to_add:
+            toolz.conf.transmissiond(user, home)
 
     specials(hostname)
 
