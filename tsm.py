@@ -8,6 +8,7 @@ import pathlib
 import getpass
 import datetime
 import time
+
 import toolz
 
 __description__ = "Make 'transmission-cli' manipulations simplified"
@@ -47,13 +48,18 @@ def show_queue():
     while True:
         try:
             os.system("clear")
+
             timenow = datetime.datetime.today().strftime("%a %b %d, %H:%M:%S")
+
             print(f"{ci}Transmission queue{c0} - {ci}{timenow}{c0}")
+
             torrentqueue = os.popen("transmission-remote -l").read()
             cl = "\33[36m"
+
             for line in torrentqueue.split("\n"):
                 print(f"{cl}{line}{c0}")
                 cl = "\33[0m"
+
             print(f"\n{cw}Press [Ctrl]+[C] to quit{c0}")
             time.sleep(2)
         except KeyboardInterrupt:
@@ -71,9 +77,13 @@ def test_torrentfile(myfile):
 
 def add_one(torrent):
     tname = os.path.basename(torrent.rsplit('.', 1)[0])
+
     print(f"{ci}Adding '{tname}'...{c0}")
+
     os.system(f'transmission-remote -a "{torrent}"')
+
     print(f"{done} '{torrent}' added to queue")
+
     os.remove(torrent)
 
 
@@ -83,6 +93,7 @@ def add_all():
 
     for myfile in os.listdir(dlfolder):
         testmyfile = os.path.isfile(f"{dlfolder}/{myfile}")
+
         if testmyfile and myfile.endswith(".torrent"):
             tlist.append(f"{dlfolder}/{myfile}")
 
@@ -100,6 +111,7 @@ def test_torrentid(myid):
     ret = False
     tidcheck_cmd = f"transmission-remote -l"
     tidinfo = os.popen(tidcheck_cmd).read()
+
     for line in tidinfo.split("\n"):
         if re.match(f"\s+{myid}\s.*", line):
             ret = True
@@ -112,14 +124,17 @@ def remove_one(tid):
 
     getid_cmd = f'transmission-remote -t {tid} -i'
     tinfo = os.popen(getid_cmd).read()
+
     for line in tinfo.split("\n"):
         if "Name:" in line:
             tname = " ".join(line.split()[1:])
 
     if tname != "":
         print(f'{ci}Removing "{tname}"...{c0}')
+
         if os.system(f"transmission-remote -t {tid} -rad") == 0:
             print(f'{done} "{tid}: {tname}" removed from queue')
+
             if toolz.yesno("Restart daemon to reorder IDs"):
                 restart_daemon()
         else:
@@ -137,9 +152,10 @@ def remove_all():
 
 
 def restart_daemon():
-    if toolz.user.is_in_group(os.getlogin(), "sudo"):
+    if toolz.user.is_in_group(os.getlogin(), "debian-transmission"):
         print(f"{ci}Restarting daemon...{c0}")
-        if os.system("sudo systemctl restart transmission-daemon") == 0:
+
+        if os.system("systemctl restart transmission-daemon") == 0:
             print(f"{done} transmission-daemon restarted\n")
     else:
         print(f"{error} '{myuser}' can not restart transmission-daemon\n")
@@ -158,6 +174,7 @@ def test_port():
         exit(1)
 
     port = ""
+
     with open(tsmconf, "r") as f:
         for line in f:
             if '"peer-port":' in line:
@@ -165,7 +182,7 @@ def test_port():
 
     if port != "":
         print(f"{ci}Transmission-daemon status{c0}:")
-        print(f"{ci}Testing port '{port}'...{c0}")
+        print(f"{ci}Testing port '{cw}{port}{ci}'...{c0}")
         os.system("transmission-remote -pt")
         print()
     else:
