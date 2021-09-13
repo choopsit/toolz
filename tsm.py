@@ -152,13 +152,20 @@ def remove_all():
 
 
 def restart_daemon():
-    if toolz.user.is_in_group(os.getlogin(), "debian-transmission"):
-        print(f"{ci}Restarting daemon...{c0}")
-
-        if os.system("systemctl restart transmission-daemon") == 0:
-            print(f"{done} transmission-daemon restarted\n")
+    high = ""
+    if toolz.user.is_in_group(os.getlogin(), "sudo"):
+        high = "sudo "
+    elif os.getuid() != 0:
+        pass
     else:
         print(f"{error} '{myuser}' can not restart transmission-daemon\n")
+
+    print(f"{ci}Restarting daemon...{c0}")
+
+    if os.system(f"{high}systemctl restart transmission-daemon") == 0:
+        print(f"{done} transmission-daemon restarted\n")
+    else:
+        print(f"{error} Failed to restart transmission-daemon")
 
 
 def daemon_status():
