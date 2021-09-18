@@ -31,6 +31,9 @@ def usage(errcode=0):
 
 
 def mojave_gtk(gitfolder):
+    req_pkgs = ["gtk2-engines-murrine", "gtk2-engines-pixbuf", "libglib2.0-dev"]
+    toolz.pkg.prerequisites(req_pkgs)
+
     thurl = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
     thfolder = f"{gitfolder}/mojave-gtk"
     toolz.git.update(thurl, thfolder)
@@ -40,15 +43,6 @@ def mojave_gtk(gitfolder):
     subprocess.check_output(thinst_cmd)
 
     print(f"{done} Mojave-Gtk theme updated")
-
-
-def catalina_gtk():
-    thname = "Os-Catalina-Gtk-night"
-    thurl = f"https://github.com/zayronxio/{thname}.git"
-    thtarget = f"/usr/share/themes/{thname}"
-    toolz.git.update(thurl, thtarget)
-
-    print(f"{done} {thname} theme updated")
 
 
 def mcmojave_cursors(gitfolder):
@@ -61,6 +55,15 @@ def mcmojave_cursors(gitfolder):
     subprocess.check_output(thinst_cmd)
 
     print(f"{done} McMojave cursors updated")
+
+
+def catalina_gtk():
+    thname = "Os-Catalina-Gtk-night"
+    thurl = f"https://github.com/zayronxio/{thname}.git"
+    thtarget = f"/usr/share/themes/{thname}"
+    toolz.git.update(thurl, thtarget)
+
+    print(f"{done} {thname} theme updated")
 
 
 def obsidian_icons(gitfolder):
@@ -126,14 +129,11 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         exit(1)
 
-    reqpkgs = ["sassc", "libcanberra-gtk-module", "libglib2.0-dev",
-               "libxml2-utils"]
-    toolz.pkg.prerequisites(reqpkgs)
-
-    #mojave_gtk(tmpfolder)
+    mojave_gtk(tmpfolder)
     mcmojave_cursors(tmpfolder)
-    catalina_gtk()
+    #catalina_gtk()
     #obsidian_icons(tmpfolder)
     #fluent_icons(tmpfolder)
     #kora_icons(tmpfolder)
+
     print()

@@ -140,15 +140,14 @@ if __name__ == "__main__":
     req_pkgs += ["xfce4-weather-plugin", "xfce4-whiskermenu-plugin"]
     req_pkgs += ["xfce4-xkb-plugin", "catfish", "redshift-gtk"]
     req_pkgs += ["gvfs-backends", "network-manager-gnome", "gnome-calculator"]
-    req_pkgs += ["cups printer-driver-escpr system-config-printer"]
+    req_pkgs += ["cups", "printer-driver-escpr", "system-config-printer"]
     req_pkgs += ["synaptic", "deborphan", "gnome-system-monitor"]
     req_pkgs += ["plank", "terminator", "file-roller", "evince"]
     req_pkgs += ["gthumb", "gimp", "imagemagick", "simple-scan"]
     req_pkgs += ["mpv", "lollypop", "soundconverter", "easytag"]
     req_pkgs += ["fonts-noto", "ttf-mscorefonts-installer"]
     req_pkgs += ["libreoffice-gtk3", "libreoffice-style-sifr"]
-    req_pkgs += ["papirus-icon-theme", "greybird-gtk-theme", "libxml2-utils"]
-    req_pkgs += ["sassc", "libcanberra-gtk-module", "libglib2.0-dev"]
+    req_pkgs += ["papirus-icon-theme", "libglib2.0-dev"]
 
     ff_pkg = "firefox-esr"
 
