@@ -56,8 +56,11 @@ def install_xfce(distro, i386, req_pkgs, useless_pkgs):
     toolz.pkg.install(req_pkgs, True)
     toolz.pkg.purge(useless_pkgs, True)
 
-    themesupdate.mcmojave_cursors("/tmp")
-    themesupdate.catalina_gtk()
+    gtk_theme = "Mojave-gtk-theme"
+    themesupdate.vinceliuice_theme(gtk_theme, "dark")
+    cursor_theme = "McMojave-cursors"
+    themesupdate.vinceliuice_theme(cursor_theme)
+
     toolz.conf.gruvbox_gtk()
 
     toolz.pkg.clean(True)

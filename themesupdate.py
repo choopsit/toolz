@@ -30,91 +30,28 @@ def usage(errcode=0):
     exit(errcode)
 
 
-def mojave_gtk(gitfolder):
-    req_pkgs = ["gtk2-engines-murrine", "gtk2-engines-pixbuf", "libglib2.0-dev"]
-    toolz.pkg.prerequisites(req_pkgs)
+def vinceliuice_theme(th_name, color=None):
+    tmp_folder = "/tmp"
 
-    thurl = "https://github.com/vinceliuice/Mojave-gtk-theme.git"
-    thfolder = f"{gitfolder}/mojave-gtk"
-    toolz.git.update(thurl, thfolder)
+    th_url = f"https://github.com/vinceliuice/{th_name}.git"
+    th_folder = os.path.join(tmp_folder, th_name)
+    toolz.git.update(th_url, th_folder)
 
-    os.chdir(thfolder)
-    thinst_cmd = ["./install.sh"]
-    subprocess.check_output(thinst_cmd)
+    th_inst_cmd = [os.path.join(th_folder, "install.sh")]
 
-    print(f"{done} Mojave-Gtk theme updated")
+    if "gtk" in th_name:
+        req_pkgs = ["gtk2-engines-murrine", "gtk2-engines-pixbuf",
+                "libglib2.0-dev"]
+        toolz.pkg.prerequisites(req_pkgs)
+        if color in ["dark", "light"]:
+            th_inst_cmd += ["-c", color]
+        elif color:
+            print(f"{error} Invalid color\n")
+            exit(1)
 
+    subprocess.check_output(th_inst_cmd)
 
-def mcmojave_cursors(gitfolder):
-    thurl = "https://github.com/vinceliuice/McMojave-cursors.git"
-    thfolder = f"{gitfolder}/mcmojave-cursors"
-    toolz.git.update(thurl, thfolder)
-
-    os.chdir(thfolder)
-    thinst_cmd = ["./install.sh"]
-    subprocess.check_output(thinst_cmd)
-
-    print(f"{done} McMojave cursors updated")
-
-
-def catalina_gtk():
-    thname = "Os-Catalina-Gtk-night"
-    thurl = f"https://github.com/zayronxio/{thname}.git"
-    thtarget = f"/usr/share/themes/{thname}"
-    toolz.git.update(thurl, thtarget)
-
-    print(f"{done} {thname} theme updated")
-
-
-def obsidian_icons(gitfolder):
-    thurl = "https://github.com/madmaxms/iconpack-obsidian.git"
-    thfolder = f"{gitfolder}/obsidian-icons"
-    toolz.git.update(thurl, thfolder)
-
-    iconth = "Obsidian"
-    mytarget = f"/usr/share/icons/{iconth}"
-    mysource = f"{thfolder}/{iconth}"
-
-    if os.path.isdir(mytarget):
-        shutil.rmtree(mytarget)
-    shutil.copytree(mysource, mytarget, symlinks=True)
-
-    updcache_cmd = ["gtk-update-icon-cache", mytarget]
-    subprocess.check_call(updcache_cmd, stderr=subprocess.DEVNULL)
-
-    print(f"{done} Obsidian icons updated")
-
-
-def fluent_icons(gitfolder):
-    thurl = "https://github.com/vinceliuice/Fluent-icon-theme.git"
-    thfolder = f"{gitfolder}/fluent-icons"
-    toolz.git.update(thurl, thfolder)
-
-    os.chdir(thfolder)
-    thinst_cmd = ["./install.sh"]
-    with open(os.devnull, 'wb') as devnull:
-        subprocess.check_call(thinst_cmd, stdout=devnull,
-                              stderr=subprocess.STDOUT)
-
-    print(f"{done} Fluent icons updated")
-
-
-def kora_icons(gitfolder):
-    thurl = "https://github.com/bikass/kora.git"
-    thfolder = f"{gitfolder}/kora-icons"
-    toolz.git.update(thurl, thfolder)
-
-    mytarget = f"/usr/share/icons/kora"
-    mysource = f"{thfolder}/kora"
-
-    if os.path.isdir(mytarget):
-        shutil.rmtree(mytarget)
-    shutil.copytree(mysource, mytarget, symlinks=True)
-
-    updcache_cmd = ["gtk-update-icon-cache", mytarget]
-    subprocess.check_call(updcache_cmd, stderr=subprocess.DEVNULL)
-
-    print(f"{done} Kora icons updated")
+    print(f"{done} {th_name} updated")
 
 
 if __name__ == "__main__":
@@ -129,11 +66,9 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         exit(1)
 
-    mojave_gtk(tmpfolder)
-    mcmojave_cursors(tmpfolder)
-    #catalina_gtk()
-    #obsidian_icons(tmpfolder)
-    #fluent_icons(tmpfolder)
-    #kora_icons(tmpfolder)
+    gtk_theme = "Mojave-gtk-theme"
+    vinceliuice_theme(gtk_theme, "dark")
+    cursor_theme = "McMojave-cursors"
+    vinceliuice_theme(cursor_theme)
 
     print()
