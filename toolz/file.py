@@ -66,17 +66,17 @@ def rcopy(src, tgt):
     return True
 
 
-def rchown(path, newowner=None, newgroup=None):
+def rchown(path, new_owner=None, new_group=None):
     """Recursive chown"""
 
-    shutil.chown(path, newowner, newgroup)
+    shutil.chown(path, new_owner, new_group)
 
     for dirpath, dirs, files in os.walk(path):
         for mydir in dirs:
-            shutil.chown(os.path.join(dirpath, mydir), newowner, newgroup)
+            shutil.chown(os.path.join(dirpath, mydir), new_owner, new_group)
 
         for myfile in files:
-            shutil.chown(os.path.join(dirpath, myfile), newowner, newgroup)
+            shutil.chown(os.path.join(dirpath, myfile), new_owner, new_group)
 
 
 def rchmod(path, perm):

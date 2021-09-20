@@ -46,51 +46,52 @@ def update_sourceslist(distro):
 def is_installed(pkg):
     """Check if a package is installed"""
 
-    instpkgs = []
-    listpkgs_cmd = f"dpkg -l | grep ^ii"
-    listpkgs = os.popen(listpkgs_cmd)
+    inst_pkgs = []
+    list_pkgs_cmd = f"dpkg -l | grep ^ii"
+    list_pkgs = os.popen(list_pkgs_cmd)
 
-    for line in listpkgs:
-        instpkg = line.split()[1]
-        if instpkg.endswith(':amd64'):
-            instpkg = instpkg.replace(':amd64','')
-        instpkgs.append(instpkg)
+    for line in list_pkgs:
+        inst_pkg = line.split()[1]
+        if inst_pkg.endswith(':amd64'):
+            inst_pkg = inst_pkg.replace(':amd64','')
 
-    return pkg in instpkgs
+        inst_pkgs.append(inst_pkg)
+
+    return pkg in inst_pkgs
 
 
-def install(pkgs, forceyes=False):
+def install(pkgs, force_yes=False):
     """Install a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
-    fyes = " -y" if forceyes else ""
+    force_yes_opt = " -y" if force_yes else ""
 
     cmds = []
-    cmds.append(f"{high}{srcupdate}")
-    cmds.append(f"{high}{pkginstall}{fyes} {' '.join(pkgs)}")
+    cmds.append(f"{high}{src_update}")
+    cmds.append(f"{high}{pkg_install}{force_yes_opt} {' '.join(pkgs)}")
 
     for cmd in cmds:
         os.system(cmd)
 
 
-def remove(pkgs, forceyes=False):
+def remove(pkgs, force_yes=False):
     """Remove a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
-    fyes = " -y" if forceyes else ""
+    force_yes_opt = " -y" if force_yes else ""
 
-    os.system(f"{high}{pkgremove}{fyes} {' '.join(pkgs)}")
+    os.system(f"{high}{pkg_remove}{force_yes_opt} {' '.join(pkgs)}")
 
 
-def purge(pkgs, forceyes=False):
+def purge(pkgs, force_yes=False):
     """Purge a list of packages"""
 
     high = "" if user.is_sudo() else "sudo "
-    fyes = " -y" if forceyes else ""
+    force_yes_opt = " -y" if force_yes else ""
 
     cmds = []
-    cmds.append(f"{high}{pkgpurge}{fyes} {' '.join(pkgs)}")
-    cmds.append(f"{high}{unneededremove}{fyes}")
+    cmds.append(f"{high}{pkg_purge}{force_yes_opt} {' '.join(pkgs)}")
+    cmds.append(f"{high}{unneeded_remove}{force_yes_opt}")
 
     for cmd in cmds:
         os.system(cmd)
@@ -99,96 +100,99 @@ def purge(pkgs, forceyes=False):
 def rm_obsoletes():
     """Remove obsolete packages"""
 
-    getobs = f"apt list ?obsolete 2>/dev/null | "
-    getobs += "awk  -F'/' '/\/now/ {print $1}'"
-    obsout = os.popen(getobs).read()
-    obspkgs = [ pkg.split(":")[0] for pkg in obsout.split("\n") ]
+    get_obs = f"apt list ?obsolete 2>/dev/null | "
+    get_obs += "awk  -F'/' '/\/now/ {print $1}'"
+    obs_out = os.popen(get_obs).read()
+    obs_pkgs = [ pkg.split(":")[0] for pkg in obs_out.split("\n") ]
 
-    if obspkgs:
-        purge(obspkgs)
+    if obs_pkgs:
+        purge(obs_pkgs)
 
 
-def clean(forceyes=False):
+def clean(force_yes=False):
     """Remove residual configurations and clean repo cache"""
 
     high = "" if user.is_sudo() else "sudo "
-    fyes = " -y" if forceyes else ""
+    force_yes_opt = " -y" if force_yes else ""
 
-    rcpkgs = []
-    listrcpkgs_cmd = f"dpkg -l | grep ^rc"
-    listrcpkgs = os.popen(listrcpkgs_cmd)
+    rc_pkgs = []
+    list_rc_pkgs_cmd = f"dpkg -l | grep ^rc"
+    list_rc_pkgs = os.popen(list_rc_pkgs_cmd)
 
-    for line in listrcpkgs:
-        rcpkgs.append(line.split()[1])
+    for line in list_rc_pkgs:
+        rc_pkgs.append(line.split()[1])
 
     cmds = []
-    if rcpkgs != []:
-        cmds.append(f"{high}{pkgpurge}{fyes} {' '.join(rcpkgs)}")
-    cmds.append(f"{high}{unneededremove}{fyes}")
-    cmds.append(f"{high}{srcsoftclean}")
-    cmds.append(f"{high}{srcclean}")
+    if rc_pkgs != []:
+        cmds.append(f"{high}{pkg_purge}{force_yes_opt} {' '.join(rc_pkgs)}")
+    cmds.append(f"{high}{unneeded_remove}{force_yes_opt}")
+    cmds.append(f"{high}{src_soft_clean}")
+    cmds.append(f"{high}{src_clean}")
 
     for cmd in cmds:
         os.system(cmd)
 
 
-def upgrade(forceyes=False):
+def upgrade(force_yes=False):
     """Upgrade distro"""
 
     high = "" if user.is_sudo() else "sudo "
-    fyes = " -y" if forceyes else ""
+    force_yes_opt = " -y" if force_yes else ""
 
     cmds = []
-    cmds.append(f"{high}{srcupdate}")
-    cmds.append(f"{high}{fullupgrade}{fyes}")
+    cmds.append(f"{high}{src_update}")
+    cmds.append(f"{high}{fullupgrade}{force_yes_opt}")
 
     for cmd in cmds:
         os.system(cmd)
 
 
-def prerequisites(reqpkgs):
+def prerequisites(req_pkgs):
     """Install needed packages if not already installed"""
 
-    missingpkgs = []
-    for rqpkg in reqpkgs:
-        if not is_installed(rqpkg):
-            missingpkgs.append(rqpkg) 
+    missing_pkgs = []
+    for req_pkg in req_pkgs:
+        if not is_installed(req_pkg):
+            missing_pkgs.append(req_pkg)
 
-    if missingpkgs:
-        print(f"{warning} Missing package(s): {', '.join(missingpkgs)}")
-        pcount = "it"
-        if len(missingpkgs) > 1:
-            pcount = "them"
+    if missing_pkgs:
+        print(f"{warning} Missing package(s): {', '.join(missing_pkgs)}")
+        p_count = "it"
+
+        if len(missing_pkgs) > 1:
+            p_count = "them"
+
         if user.is_sudo():
-            if yesno(f"Install {pcount}"):
-                install(reqpkgs, True)
+            if yesno(f"Install {p_count}"):
+                install(req_pkgs, True)
             else:
                 exit(1)
         else:
             exit(1)
-        for rqpkg in missingpkgs:
-            if not is_installed(rqpkg):
+
+        for req_pkg in missing_pkgs:
+            if not is_installed(req_pkg):
                 print(f"{error} Needed package not installed\n")
                 exit(1)
 
 
 distro = syst.get_distro()
-debianderivatives = ["debian", "ubuntu", "linuxmint"]
+debian_derivatives = ["debian", "ubuntu"]
 
-if distro in debianderivatives:
-    srcupdate = "apt update"
-    srcsoftclean = "apt autoclean 2>/dev/null"
-    srcclean = "apt clean 2>/dev/null"
+if distro in debian_derivatives:
+    src_update = "apt update"
+    src_soft_clean = "apt autoclean 2>/dev/null"
+    src_clean = "apt clean 2>/dev/null"
 
     fullupgrade = "apt full-upgrade"
-    unneededremove = "apt autoremove --purge"
+    unneeded_remove = "apt autoremove --purge"
 
-    pkginstall = "apt install"
-    pkgremove = "apt remove"
-    pkgpurge = "apt purge"
+    pkg_install = "apt install"
+    pkg_remove = "apt remove"
+    pkg_purge = "apt purge"
 
-    listpkgs = "dpkg -l | grep ^ii"
-    listresidualconf = f"dpkg -l | grep ^rc"
+    list_pkgs = "dpkg -l | grep ^ii"
+    list_residual_conf = f"dpkg -l | grep ^rc"
 else:
     print(f"{error} Unsupported distribution '{distro}'")
     exit(1)

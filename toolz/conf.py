@@ -52,14 +52,14 @@ def swap():
 def ssh():
     """Apply ssh configuration: allow root login"""
 
-    sshconf_base = "/etc/ssh/sshd_config"
-    sshconf_rootok = f"{sshconf_base}.d/allow_root.conf"
+    ssh_conf_base = "/etc/ssh/sshd_config"
+    ssh_conf_rootok = f"{sshconf_base}.d/allow_root.conf"
 
     rootok_pattern = "PermitRootLogin yes"
 
-    if not test_conf(sshconf_base, rootok_pattern) and \
-            not test_conf(sshconf_rootok, rootok_pattern):
-        with open(sshconf_rootok, "a") as f:
+    if not test_conf(ssh_conf_base, rootok_pattern) and \
+            not test_conf(ssh_conf_rootok, rootok_pattern):
+        with open(ssh_conf_rootok, "a") as f:
             f.write("# Allow root user to connect on ssh\n")
             f.write(f"{rootok_pattern}\n")
 
@@ -151,19 +151,19 @@ def lightdm():
 
     lightdm_conf = "/usr/share/lightdm/lightdm.conf.d/10_my.conf"
     tmp_file = "/tmp/lightdm_perso.conf"
-    newlines = ["[Seat:*]\n", "greeter-hide-users=false\n", "[Greeter]\n",
-                "draw-user-backgrounds=true\n"]
+    new_lines = ["[Seat:*]\n", "greeter-hide-users=false\n", "[Greeter]\n",
+            "draw-user-backgrounds=true\n"]
 
     if os.path.isfile(lightdm_conf):
         file.overwrite(lightdm_conf, tmp_file)
 
         with open(tmp_file, "r") as oldf, open(lightdm_conf, "a") as newf:
-            for line in newlines:
+            for line in new_lines:
                 if line not in oldf:
                     newf.write(line)
     else:
         with open(lightdm_conf, "w") as f:
-            for line in newlines:
+            for line in new_lines:
                 f.write(line)
 
 
@@ -211,16 +211,16 @@ def pulseaudio():
 def redshift():
     """Link redshift to geoclue to follow local time"""
 
-    redshift_conf = "/etc/geoclue/geoclue.conf"
+    geoclue_conf = "/etc/geoclue/geoclue.conf"
     redshift_ok = False
 
-    with open(redshift_conf, "r") as f:
+    with open(geoclue_conf, "r") as f:
         for line in f:
             if "redshift" in line:
                 redshift_ok = True
 
     if not redshift_ok:
-        with open(redshift_conf, "a") as f:
+        with open(geoclue_conf, "a") as f:
             f.write("\n[redshift]\nallowed=true\nsystem=false\nusers=\n")
 
 
@@ -228,15 +228,15 @@ def transmissiond(user, home):
     """Deploy transmission-deamon configuration with {user} as daemon user"""
 
     os.system("systemctl stop transmission-daemon")
-    tsmd_confdir = "/etc/systemd/system/transmission-daemon.service.d/"
-    tsmd_conf = f"{tsmd_confdir}/override.conf"
+    tsmd_service_dir = "/etc/systemd/system/transmission-daemon.service.d/"
+    tsmd_service_conf = f"{tsmd_confdir}/override.conf"
 
-    if not os.path.isdir(tsmd_confdir):
-        os.makedirs(tsmd_confdir)
+    if not os.path.isdir(tsmd_service_dir):
+        os.makedirs(tsmd_service_dir)
 
     os.system("systemctl stop transmission-daemon")
 
-    with open(tsmd_conf, "w") as f:
+    with open(tsmd_service_conf, "w") as f:
         f.write(f"[Service]\nUser={user}\n")
 
     os.system("systemctl daemon-reload")
@@ -244,20 +244,20 @@ def transmissiond(user, home):
     os.system("systemctl stop transmission-daemon")
 
     tsmd_conf_dir = f"{home}/.config/transmission-daemon"
-    tsmd_userconf = f"{tsmd_conf_dir}/settings.json"
+    tsmd_user_conf = f"{tsmd_conf_dir}/settings.json"
     tsmd_conf_orig = "/var/lib/transmission-daemon/info/settings.json"
 
     if not os.path.isdir(tsmd_conf_dir):
         os.makedirs(tsmd_conf_dir)
 
-    if not os.path.isfile(tsmd_userconf):
-        shutil.copy(tsmd_conf_orig, tsmd_userconf)
+    if not os.path.isfile(tsmd_user_conf):
+        shutil.copy(tsmd_conf_orig, tsmd_user_conf)
 
     tmp_file = "/tmp/tsmdsettings.json"
 
-    file.overwrite(tsmd_userconf, tmp_file)
+    file.overwrite(tsmd_user_conf, tmp_file)
 
-    with open(tmp_file, "r") as oldf, open(tsmd_userconf, "w") as newf:
+    with open(tmp_file, "r") as oldf, open(tsmd_user_conf, "w") as newf:
         for line in oldf:
             if '"peer-port"' in line:
                 newf.write('    "peer-port": 57413,\n')
@@ -312,18 +312,3 @@ def xfce(home):
         file.overwrite(conf_src, conf_tgt)
 
         print(f"{done} {soft} configuration deployed in '{home}/.config'")
-
-    #locshare_dict = {
-    #        "Plank": "plank"
-    #        }
-
-    #for soft, soft_locshare in locshare_dict.items():
-    #    conf_src = f"{conf_srcfolder}/local/share/{soft_locshare}"
-    #    conf_tgt = f"{home}/.local/share/{soft_locshare}"
-    #
-    #    if not os.path.exists(conf_tgt):
-    #        os.makedirs(conf_tgt)
-    #
-    #    file.overwrite(conf_src, conf_tgt)
-    #
-    #    print(f"{done} {soft} specifications deployed in '{home}/.local/share'")

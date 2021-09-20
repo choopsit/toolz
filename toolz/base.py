@@ -19,12 +19,12 @@ warning = f"{cw}W{c0}:"
 def yesno(question, default="n"):
     """Ask a '"yes or no' question with a default choice defined as 'n'
        Return True/False for 'Yes'/'No'"""
-    
-    defindic = "[y/N]"
-    if default.lower() == "y":
-        defindic = "[Y/n]"
 
-    answer = input(f"{question} {defindic} ? ").lower()
+    def_indic = "[y/N]"
+    if default.lower() == "y":
+        def_indic = "[Y/n]"
+
+    answer = input(f"{question} {def_indic} ? ").lower()
     if answer == "":
         answer = default.lower()
     elif not re.match('^(y|yes|n|no)$', answer):

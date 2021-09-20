@@ -73,9 +73,9 @@ def prereq():
         print(f"{error} OS is not Debian\n")
         exit(1)
 
-    olddebian = ["buster", "stretch", "jessie", "wheezy", "squeeze", "lenny"]
+    old_debian = ["buster", "stretch", "jessie", "wheezy", "squeeze", "lenny"]
     codename = get_codename()
-    if codename in olddebian:
+    if codename in old_debian:
         print(f"{error} '{codename}' is a too old Debian version\n")
         exit(1)
 
@@ -87,21 +87,10 @@ def prereq():
 def is_vm():
     """Check if machine is virtual"""
 
-    testkvm = "lspci | grep -q paravirtual"
-    testvbox = "lspci | grep -iq virtualbox"
+    test_kvm = "lspci | grep -q paravirtual"
+    test_vbox = "lspci | grep -iq virtualbox"
 
-    return os.system(testkvm) == 0 or os.system(testvbox) == 0
-
-
-def add_to_fstab(label, uuid, mntpoint, fstype, options):
-    """Add partition to fstab"""
-
-    mntline = f"\n#{label}\n"
-    mntline += f"UUID={uuid}\t{mntpoint}\t{fstype}\t{options}\t0\t0"
-
-    with open("/etc/fstab", "a+") as f:
-        if label not in f.read():
-            f.write(mntline)
+    return os.system(test_kvm) == 0 or os.system(test_vbox) == 0
 
 
 def is_valid_hostname(hostname):
@@ -112,6 +101,7 @@ def is_valid_hostname(hostname):
 
     if hostname[-1] == ".":
         hostname = hostname[:-1]
+
     allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
 
     return all(allowed.match(x) for x in hostname.split("."))
@@ -133,14 +123,14 @@ def set_hostname():
     if yesno(f"Keep current hostname: '{fqdn}'", "y"):
         hostname, domain = decompose_fqdn(fqdn)
     else:
-        newhostname = input("New hostname (or FQDN) ? ")
-        if newhostname == "":
+        new_hostname = input("New hostname (or FQDN) ? ")
+        if new_hostname == "":
             print(f"{error} No hostname given")
             hostname, domain = set_hostname()
-        elif is_valid_hostname(newhostname):
-            hostname, domain = decompose_fqdn(newhostname)
+        elif is_valid_hostname(new_hostname):
+            hostname, domain = decompose_fqdn(new_hostname)
         else:
-            print(f"{error} Invalid hostname '{newhostname}'")
+            print(f"{error} Invalid hostname '{new_hostname}'")
             hostname, domain = set_hostname()
 
     return hostname, domain
@@ -154,15 +144,15 @@ def renew_hostname(fqdn):
     with open("/etc/hostname", "w") as f:
         f.write(f"{hostname}\n")
 
-    hostline = f"127.0.1.1\t{hostname}"
+    new_host_line = f"127.0.1.1\t{hostname}"
     if domain != "":
-        hostline += f".{domain}\t{hostname}"
+        new_host_line += f".{domain}\t{hostname}"
 
     file.overwrite("/etc/hosts", "/tmp/hosts")
     with open("/tmp/hosts", "r") as oldf, open("/etc/hosts", "w") as newf:
         for line in oldf:
             if line.startswith("127.0.1.1"):
-                newf.write(hostline)
+                newf.write(new_host_line)
             else:
                 newf.write(line)
 
@@ -172,12 +162,13 @@ def renew_hostname(fqdn):
 def list_users():
     """List users having their home directory at '/home/{user}'"""
 
-    userslist = []
+    users_list = []
     potential_users = os.listdir("/home")
+
     for user in potential_users:
         with open("/etc/passwd") as f:
             for line in f:
                 if line.startswith(f"{user}:"):
-                    userslist.append(user)
+                    users_list.append(user)
 
-    return userslist
+    return users_list
