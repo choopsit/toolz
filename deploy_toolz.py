@@ -65,8 +65,6 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         usage(1)
 
-    toolz.syst.prereq()
-
     src = os.path.dirname(os.path.realpath(__file__))
     tgt = "/usr/local/bin"
 
