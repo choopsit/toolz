@@ -52,6 +52,7 @@ def deploy_scripts(src, tgt):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
         else:
             print(f"{error} '{script}' failed to be deployed")
+
     print()
 
 

@@ -279,6 +279,7 @@ def gruvbox_gtk():
         style_tgts = []
         style_tgts.append(f"/usr/share/gtksourceview-3.0/styles/{style}")
         style_tgts.append(style_tgts[0].replace("3.0", "4"))
+
         for style_tgt in style_tgts:
             if not os.path.exists(style_tgt):
                 urllib.request.urlretrieve(style_url, style_tgt)

@@ -116,8 +116,8 @@ if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     elif distro != "debian":
-        print(f"{error} OS is not Debian\n")                                     
-        exit(1)          
+        print(f"{error} OS is not Debian\n")
+        exit(1)
     elif os.getuid() != 0:
         print(f"{error} Need higher privileges\n")
         exit(1)
@@ -130,11 +130,11 @@ if __name__ == "__main__":
 
     if codename not in valid_codenames:
         print(f"{error} '{codename}' is a too old Debian version\n")
-        exit(1)          
+        exit(1)
 
     i386 = False
     grp_list = ["sudo"]
-    
+
     req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop", "nfs-common"]
     req_pkgs += ["task-xfce-desktop", "task-desktop", "slick-greeter"]
     req_pkgs += ["xfce4-appfinder", "xfce4-appmenu-plugin"]

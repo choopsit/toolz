@@ -69,12 +69,14 @@ def prereq():
     """Test prerequisites: Debian stable or later"""
 
     distro = get_distro()
+
     if distro != "debian":
         print(f"{error} OS is not Debian\n")
         exit(1)
 
     old_debian = ["buster", "stretch", "jessie", "wheezy", "squeeze", "lenny"]
     codename = get_codename()
+
     if codename in old_debian:
         print(f"{error} '{codename}' is a too old Debian version\n")
         exit(1)
@@ -120,10 +122,12 @@ def set_hostname():
     """Define a machine hostname"""
 
     fqdn = socket.getfqdn()
+
     if yesno(f"Keep current hostname: '{fqdn}'", "y"):
         hostname, domain = decompose_fqdn(fqdn)
     else:
         new_hostname = input("New hostname (or FQDN) ? ")
+
         if new_hostname == "":
             print(f"{error} No hostname given")
             hostname, domain = set_hostname()
@@ -145,6 +149,7 @@ def renew_hostname(fqdn):
         f.write(f"{hostname}\n")
 
     new_host_line = f"127.0.1.1\t{hostname}"
+
     if domain != "":
         new_host_line += f".{domain}\t{hostname}"
 

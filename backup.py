@@ -39,14 +39,17 @@ def test_backupfolder(folder):
                   "/initrd.img.old", "/lib", "/lib32", "/lib64", "/libx32",
                   "/media", "/mnt", "/opt", "/proc", "/root", "/run", "/srv",
                   "/sys", "/tmp", "/usr", "/var"]
+
     if folder in forbiddens:
         print(f"{error} Invalid folder '{folder}'\n")
         exit(1)
 
     okcreate=""
+
     if not os.path.exists(folder):
         print(f"{warning} '{folder}' does not exist yet")
         okcreate = input("Create it [Y/n] ? ")
+
         if okcreate.lower() in ["n", "no"]:
             exit(0)
         else:
@@ -75,12 +78,15 @@ def backup(destfolder):
                    ".local/share/plank", ".local/share/remmina",
                    ".local/share/rhythmbox", ".local/share/xfce4", "Documents",
                    "Music", "Pictures", "Videos", "Work", "Games"]
+
     cfgfiles = ["/etc/fstab", "/etc/exports", "/etc/hosts",
                 "/etc/ssh/sshd_config", "/etc/sysctl.d/99-swappiness.conf",
                 "/etc/pulse/daemon.conf", "/etc/apt/sources.list",
                 "/usr/share/lightdm/lightdm.conf.d/01_my.conf",
                 "/usr/share/X11/xorg.conf.d/10-nvidia.conf"]
+
     morebackups = []
+
     if socket.gethostname() == "mrchat":
         morebackups = ["/volumes/speedix/Music", "/volumes/speedix/Games"]
 
@@ -96,16 +102,22 @@ def backup(destfolder):
     rsynccmd = "rsync -qOatzulr --delete --exclude='*~'"
 
     errhome = 0
+
     for bkpelement in homebackups:
         bkpsrc = f"{myhome}/{bkpelement}"
+
         if os.path.exists(bkpsrc):
             bkpsubfolder = os.path.dirname(bkpsrc)
+
             if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
                 os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+
             bkpdst = f"{bkpfolder}/{bkpsubfolder}"
             bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+
             if os.system(bkp_cmd) != 0:
                 errhome += 1
+
     if errhome == 0:
         ecol = "\33[32m"
     else:
@@ -115,15 +127,20 @@ def backup(destfolder):
     print(f"with {ecol}{errhome}{c0} error(s)")
 
     errcfg = 0
+
     for bkpsrc in cfgfiles:
         if os.path.exists(bkpsrc):
             bkpsubfolder = os.path.dirname(bkpsrc)
+
             if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
                 os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+
             bkpdst = f"{bkpfolder}/{bkpsubfolder}"
             bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+
             if os.system(bkp_cmd) != 0:
                 errcfg += 1
+
     if errcfg == 0:
         ecol = "\33[32m"
     else:
@@ -137,14 +154,19 @@ def backup(destfolder):
             errother = 0
             ecol = "\33[32m"
             bkpsubfolder = os.path.dirname(bkpsrc)
+
             if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
                 os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+
             bkpdst = f"{bkpfolder}{bkpsubfolder}"
             bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+
             if os.system(bkp_cmd) != 0:
                 errother += 1
+
             if errother != 0:
                 ecol = "\33[31m"
+
             print(f"{done} '{bkpsrc}' backuped in '{bkpfolder}'", end=" ")
             print(f"with {ecol}{errother}{c0} error(s)")
 

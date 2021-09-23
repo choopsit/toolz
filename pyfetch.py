@@ -130,6 +130,7 @@ def get_kernel():
     kernel = platform.release()
 
     sep = ""
+
     if len(kernel) < 12:
         sep = "\t"
 
@@ -140,6 +141,7 @@ def get_packages(dist):
     pkgcount = "N/A"
 
     distok = ["debian", "raspbian", "ubuntu"]
+
     if dist in distok:
         list_cmd = ['dpkg', '-l']
         count_cmd = ['grep', '-c', '^i']
@@ -170,6 +172,7 @@ def get_term():
     term = "N/A"
 
     getterm = "x-terminal-emulator --version 2>/dev/null"
+
     try:
         os.environ['DISPLAY']
     except KeyError:
@@ -199,12 +202,13 @@ def get_de():
 
     wmchk_cmd = ['update-alternatives', '--list', 'x-window-manager']
     try:
-        wm = subprocess.check_output(wmchk_cmd,
-                                     universal_newlines=True).split("/")[-1].rstrip("\n")
+        get_wm = subprocess.check_output(wmchk_cmd, universal_newlines=True)
+        wm = get_wm.split("/")[-1].rstrip("\n")
     except subprocess.CalledProcessError:
         wm = "N/A"
 
     sep = "\t\t"
+
     if len(de) < 5:
         sep += "\t"
     elif len(de) > 12:
@@ -217,25 +221,31 @@ def get_perso(de, wm):
     gtkth = ""
     iconth = ""
     home = str(pathlib.Path.home())
+
     if de == "XFCE" or wm == "xfwm4":
         conf = f"{home}/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+
         with open(conf, "r") as f:
             for line in f:
                 if "\"ThemeName" in line:
                     gtkth = line.split('="')[-1].split('"')[0]
+
                 if "IconThemeName" in line:
                     iconth = line.split('="')[-1].split('"')[0]
     elif wm == "awesome":
         conf = f"{home}/.gtkrc-2.0"
+
         if os.path.isfile(conf):
             with open(conf, "r") as f:
                 for line in f:
                     if line.startswith("gtk-theme-name"):
                         gtkth = line.split('="')[-1].split('"')[0]
+
                     if line.startswith("gtk-icon-theme-name"):
                         iconth = line.split('="')[-1].split('"')[0]
 
     sep = "\t\t"
+
     if len(iconth) < 5:
         sep += "\t"
     elif len(iconth) > 12:
@@ -271,19 +281,25 @@ def get_mem():
         for line in f:
             if line.startswith("MemTotal:"):
                 memtotal = int(line.split(None, 2)[1]) // 1024
+
             if line.startswith("MemAvailable:"):
                 memused = memtotal - int(line.split(None, 2)[1]) // 1024
+
             if line.startswith("SwapTotal:"):
                 swaptotal = int(line.split(None, 2)[1]) // 1024
+
             if line.startswith("SwapFree:"):
                 swapused = swaptotal - int(line.split(None, 2)[1]) // 1024
 
     mrepart = f"{memused}/{memtotal}"
     msep = "\t"
+
     if len(mrepart) < 10:
         msep += "\t"
+
     ret = f"{ci}RAM{c0}:    {memused}/{memtotal}MB {msep}"
     ret += f"{ci}Swap{c0}:      {swapused}/{swaptotal}MB"
+
     return ret
 
 
@@ -294,12 +310,16 @@ def pick_infos(logo, dist):
     infolist.append(f"{get_kernel()}\t{get_packages(dist)}")
     infolist.append(get_uptime())
     infolist.append(f"{get_shell()}\t\t{get_term()}")
+
     deinfo, de, wm = get_de()
+
     infolist.append(deinfo)
     infolist.append(get_perso(de, wm))
     infolist.append(get_cpu())
+
     if dist != 'raspbian':
         infolist.append(get_gpu())
+
     infolist.append(get_mem())
 
     while len(infolist) < len(logo):

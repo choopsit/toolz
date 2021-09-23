@@ -21,10 +21,12 @@ def yesno(question, default="n"):
        Return True/False for 'Yes'/'No'"""
 
     def_indic = "[y/N]"
+
     if default.lower() == "y":
         def_indic = "[Y/n]"
 
     answer = input(f"{question} {def_indic} ? ").lower()
+
     if answer == "":
         answer = default.lower()
     elif not re.match('^(y|yes|n|no)$', answer):

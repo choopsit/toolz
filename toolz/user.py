@@ -38,6 +38,7 @@ def is_in_group(user, grp):
     """Check if user '{user}' is in group '{grp}'"""
 
     grp_list = os.popen(f"groups {user}").read()
+
     if grp in grp_list:
         return True
 

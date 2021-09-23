@@ -34,7 +34,9 @@ def usage(errcode=0):
 def get_host_info():
     myhostname = socket.gethostname()
     print(f"{ci}Hostname{c0}: {myhostname}")
+
     myfqdn = socket.getfqdn()
+
     if myfqdn != myhostname:
         print(f"{ci}FQDN{c0}: {myfqdn}")
 
@@ -54,26 +56,32 @@ def get_ip(ifname):
 
     ifreq = struct.pack('16sH14s', ifname.encode('utf-8'), socket.AF_INET,
                         b'\x00'*14)
+
     try:
         res = fcntl.ioctl(sockfd, SIOCGIFADDR, ifreq)
     except:
         return None
+
     ip = struct.unpack('16sH2x4s8x', res)[2]
+
     return socket.inet_ntoa(ip)
 
 
 def get_gw():
     getgw_cmd = "ip r | grep default | awk '{print $3}'"
+
     return os.popen(getgw_cmd).read().rstrip("\n")
 
 
 def get_dns():
     getdns_cmd = "dig | awk -F'(' '/SERVER:/{print $2}' | sed 's/.$//'"
+
     return os.popen(getdns_cmd).read().rstrip("\n")
 
 
 def list_ifaces():
     iflist = os.listdir('/sys/class/net/')
+
     for iface in iflist:
         if not re.match('^(lo|vif.*|virbr.*-.*|vnet.*)$', iface):
             print(f"{ci}Interface{c0}: {iface}")
@@ -83,8 +91,10 @@ def list_ifaces():
             print(f"  - {ci}MAC address{c0}: {macaddr}")
             ipaddr = get_ip(iface)
             print(f"  - {ci}IP address{c0}:  {ipaddr}")
+
     gw = get_gw()
     print(f"{ci}Gateway{c0}:         {gw}")
+
     nameserver = get_dns()
     print(f"{ci}DNS nameserver{c0}:  {nameserver}")
     print()

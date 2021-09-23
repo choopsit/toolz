@@ -58,5 +58,6 @@ def test_repo(path):
     """Test if a folder is a git repo, then get its status"""
 
     git_config = f"{path}/.git/config"
+
     if os.path.isfile(git_config):
         stat_repo(path)

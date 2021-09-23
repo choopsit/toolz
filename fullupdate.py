@@ -38,6 +38,7 @@ def system_upgrade(rmobs):
     print(f"{ci}System upgrade{c0}:")
 
     sudo = ""
+
     if not toolz.user.is_sudo():
         sudo = "sudo "
 

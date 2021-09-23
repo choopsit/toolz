@@ -42,7 +42,9 @@ def vinceliuice_theme(th_name, color=None):
     if "gtk" in th_name:
         req_pkgs = ["gtk2-engines-murrine", "gtk2-engines-pixbuf",
                 "libglib2.0-dev"]
+
         toolz.pkg.prerequisites(req_pkgs)
+
         if color in ["dark", "light"]:
             th_inst_cmd += ["-c", color]
         elif color:

@@ -23,6 +23,7 @@ def overwrite(src, tgt):
     if os.path.isdir(src):
         if os.path.isdir(tgt):
             shutil.rmtree(tgt)
+
         try:
             shutil.copytree(src, tgt, symlinks=True)
         except EnvironmentError:
@@ -30,6 +31,7 @@ def overwrite(src, tgt):
     else:
         if os.path.exists(tgt):
             os.remove(tgt)
+
         try:
             shutil.copy(src, tgt, follow_symlinks=False)
         except EnvironmentError:
@@ -45,6 +47,7 @@ def rcopy(src, tgt):
         for item in files:
             src_path = os.path.join(root, item)
             dst_path = os.path.join(tgt, src_path.replace(f"{src}/", ""))
+
             if os.path.exists(dst_path):
                 if os.stat(src_path).st_mtime > os.stat(dst_path).st_mtime:
                     shutil.copy(src_path, dst_path)
@@ -57,6 +60,7 @@ def rcopy(src, tgt):
         for item in dirs:
             src_path = os.path.join(root, item)
             dst_path = os.path.join(tgt, src_path.replace(f"{src}/", ""))
+
             if not os.path.exists(dst_path):
                 try:
                     os.makedirs(dst_path)

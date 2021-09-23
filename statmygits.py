@@ -35,6 +35,7 @@ def get_repos_status(gitstock):
     cpt = 0
     for repo in os.listdir(gitstock):
         path = f"{gitstock}/{repo}"
+
         if os.path.isdir(f"{path}/.git"):
             cpt += 1
             print(f"{ci}Repo{c0}: {repo}")

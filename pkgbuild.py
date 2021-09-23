@@ -42,6 +42,7 @@ def build_deb_package(folder):
 
     destfolder = os.path.abspath(pathlib.Path(folder).parent)
     pkgname = os.path.basename(folder)
+
     print(f"{done} '{pkgname}.deb' generated in '{destfolder}'")
 
 

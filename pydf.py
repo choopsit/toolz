@@ -31,6 +31,7 @@ def usage(errcode=0):
 
 def dim_separator(prop):
     sep = " "
+
     if prop == 100:
         sep = ""
     elif prop < 10:
@@ -41,9 +42,10 @@ def dim_separator(prop):
 
 def color_fs(prop):
     color = "\33[32m"
+
     if prop >= 90:
         color = "\33[33m"
-    if prop >= 95:
+    elif prop >= 95:
         color = "\33[31m"
 
     return color
@@ -62,11 +64,12 @@ def dim_fsunit(voltotal):
 
 def color_line(mountpoint):
     fs_color = "\33[0m"
+
     if mountpoint[1] in ["nfs", "cifs"]:
         fs_color = "\33[34m"
-    if mountpoint[1].startswith("fuse"):
+    elif mountpoint[1].startswith("fuse"):
         fs_color = "\33[35m"
-    if mountpoint[1].endswith("tmpfs"):
+    elif mountpoint[1].endswith("tmpfs"):
         fs_color = "\33[37m"
 
     return fs_color
@@ -77,39 +80,42 @@ def draw_fs(mountpoint):
 
     total = shutil.disk_usage(str(mountpoint[0]))[0]
     used = shutil.disk_usage(str(mountpoint[0]))[1]
- 
+
     usedprop = 100 * used // total
- 
+
     sepg = dim_separator(usedprop)
- 
+
     cfs = color_fs(usedprop)
     cn = "\33[37m"
- 
+
     totallg = 40
     usedlg = usedprop * totallg // 100
     usedgr = usedlg * f"#"
     freegr = (totallg - usedlg) * "-"
- 
+
     unit, factor = dim_fsunit(total)
- 
+
     totalu = total / factor
     usedu = used / factor
     freeu = totalu - usedu
- 
+
     tline = f"-{ci}{mountpoint[2]}{c0}:\n"
     tline += f"  {ci}type{c0}: {ctxt}{mountpoint[1]}\t"
     tline += f"{ci}mounted on{c0}: {ctxt}{mountpoint[0]}{c0}"
- 
+
     repart = f"{usedu:.1f}/{totalu:.1f}{unit}"
     lensep = 13 - len(repart)
     sep = " " * lensep
+
     gline = f"  [{cfs}{usedgr}{cn}{freegr}{c0}]{sepg}{cfs}{usedprop}{c0}%"
     gline += f" {sep}{ctxt}{repart}{c0}"
+
     freesp= f"{freeu:.1f}{unit}"
     lenfsep = 8 - len(freesp)
     fsep = " " * lenfsep
+
     gline += f" -{fsep}{ctxt}{freesp} free{c0}"
- 
+
     print(f"{tline}\n{gline}")
 
 
@@ -119,6 +125,7 @@ def fs_info(fsregex):
     with open("/proc/mounts", "r") as f:
         mounts = [(line.split()[1].replace('\\040', ' '), line.split()[2], line.split()[0])
                   for line in f.readlines()]
+
         for mntpoint in mounts:
             if re.match(fsregex, mntpoint[1]):
                 draw_fs(mntpoint)

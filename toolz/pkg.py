@@ -30,14 +30,17 @@ def update_sourceslist(distro):
         tmpfile = "/tmp/sources.list"
 
         file.overwrite(sourceslist, tmpfile)
+
         with open(tmpfile, "r") as oldf, open(sourceslist, "w") as tmpf:
             for line in oldf:
                 okline = True
+
                 if "cdrom" in line or line == "#\n" or line.isspace():
                     okline = False
 
                 if okline:
                     lineend = ""
+
                     if line.endswith(" main\n"):
                         lineend = " contrib non-free"
                     tmpf.write(f"{line.strip()}{lineend}\n")
@@ -52,6 +55,7 @@ def is_installed(pkg):
 
     for line in list_pkgs:
         inst_pkg = line.split()[1]
+
         if inst_pkg.endswith(':amd64'):
             inst_pkg = inst_pkg.replace(':amd64','')
 
@@ -123,6 +127,7 @@ def clean(force_yes=False):
         rc_pkgs.append(line.split()[1])
 
     cmds = []
+
     if rc_pkgs != []:
         cmds.append(f"{high}{pkg_purge}{force_yes_opt} {' '.join(rc_pkgs)}")
     cmds.append(f"{high}{unneeded_remove}{force_yes_opt}")
@@ -151,6 +156,7 @@ def prerequisites(req_pkgs):
     """Install needed packages if not already installed"""
 
     missing_pkgs = []
+
     for req_pkg in req_pkgs:
         if not is_installed(req_pkg):
             missing_pkgs.append(req_pkg)

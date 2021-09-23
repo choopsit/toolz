@@ -31,22 +31,28 @@ def print_help():
     for script in sorted(os.listdir("/usr/local/bin")):
         okscript = False
         okhelp = False
+
         if os.path.isdir(script):
             continue
+
         with open(f"/usr/local/bin/{script}", "r") as f:
             for line in f:
                 if line.startswith("#!/"):
                     language = line.split()[1]
+
                     if language.endswith("sh"):
                         cl = "\33[37m"
                     elif language.startswith("python"):
                         cl = "\33[94m"
                     else:
                         cl = "\33[35m"
+
                 if line.startswith("__author__") and "Choops" in line:
                     okscript = True
+
                 if "-h,--help:" in line:
                     okhelp = True
+
         if okscript and okhelp:
             print(f"{cs}{script}{c0} [{cl}{language}{c0}]:")
             os.system(f"{script} -h")
@@ -58,6 +64,5 @@ if __name__ == "__main__":
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument\n")
         usage(1)
-
 
     print_help()
