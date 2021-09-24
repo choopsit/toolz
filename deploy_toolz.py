@@ -61,12 +61,12 @@ def deploy_lib(src, mylib):
     bashrc = f"{_HOME}/.config/bash/bashrc"
     tmp_file = "/tmp/bashrc"
 
-    overwrite(bashrc, tmp_file)
+    if not os.path.isfile(bashrc):
+        bashrc =f"{_HOME}/.bashrc"
 
     _GROUP = pathlib.Path(bashrc).group()
 
-    if not os.path.isfile(bashrc):
-        bashrc =f"{_HOME}/.bashrc"
+    overwrite(bashrc, tmp_file)
 
     with open(tmp_file, "r") as f:
         bashrc_content = f.read()
