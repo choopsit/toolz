@@ -3,8 +3,7 @@
 import os
 import sys
 import re
-import shutil
-import pathlib
+import toolz
 
 __description__ = "Deploy scripts to '/usr/local/bin'"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -29,6 +28,7 @@ def usage(errcode=0):
     exit(errcode)
 
 
+<<<<<<< HEAD
 def overwrite(src, tgt):
     """Overwrite file or folder"""
 
@@ -52,41 +52,16 @@ def overwrite(src, tgt):
     return True
 
 
-def deploy_lib(src, mylib):
-    lib_src = os.path.join(src, mylib)
+def deploy_lib(src, tgt):
+    mylib = "toolz"
+    libsrc = os.path.join(src, mylib)
+    libtgt = os.path.join(tgt, mylib)
 
-    _USERNAME = os.getenv("SUDO_USER") or os.getenv("USER")
-    _HOME = os.path.expanduser(f"~{_USERNAME}")
+    if not os.path.isdir(libtgt):
+        os.makedirs(libtgt)
 
-    bashrc = f"{_HOME}/.config/bash/bashrc"
-    tmp_file = "/tmp/bashrc"
-
-    if not os.path.isfile(bashrc):
-        bashrc =f"{_HOME}/.bashrc"
-
-    _GROUP = pathlib.Path(bashrc).group()
-
-    overwrite(bashrc, tmp_file)
-
-    with open(tmp_file, "r") as f:
-        bashrc_content = f.read()
-        if "PYTHONPATH" in bashrc_content and src not in bashrc_content:
-            with open (tmp_file, "r") as oldf, open(bashrc, "w") as newf:
-                print("Editing bashrc")
-                for line in oldf:
-                    if line.startswith("export PYTHONPATH"):
-                        oldline = line.strip('\n')
-                        newline = f"{oldline}:{src}\n"
-                        newf.write(newline)
-                    else:
-                        newf.write(line)
-        elif "PYTHONPATH" not in bashrc_content:
-            with open(bashrc, "a") as newf:
-                print("Expanding bashrc")
-                newline = f"\nexport PYTHONPATH={src}\n"
-                newf.write(newline)
-
-        shutil.chown(bashrc, _USERNAME, _GROUP)
+    if toolz.file.overwrite(libsrc, libtgt):
+        print(f"{done} '{mylib}' deployed in '/usr/local/bin'")
 
 
 def deploy_scripts(src, tgt):
@@ -97,7 +72,7 @@ def deploy_scripts(src, tgt):
         print(f"{warning} '{not_to_deploy}.py' not deployed")
 
     for script in scripts:
-        if overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
+        if toolz.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
         else:
             print(f"{error} '{script}' failed to be deployed")
@@ -118,7 +93,5 @@ if __name__ == "__main__":
     src = os.path.dirname(os.path.realpath(__file__))
     tgt = "/usr/local/bin"
 
-    mylib = "toolz"
-
-    deploy_lib(src, mylib)
+    deploy_lib(src, tgt)
     deploy_scripts(src, tgt)
