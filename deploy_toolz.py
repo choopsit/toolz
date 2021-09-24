@@ -3,7 +3,8 @@
 import os
 import sys
 import re
-import toolz
+import shutil
+import pathlib
 
 __description__ = "Deploy scripts to '/usr/local/bin'"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -28,16 +29,64 @@ def usage(errcode=0):
     exit(errcode)
 
 
-def deploy_lib(src, tgt):
-    mylib = "toolz"
-    libsrc = os.path.join(src, mylib)
-    libtgt = os.path.join(tgt, mylib)
+def overwrite(src, tgt):
+    """Overwrite file or folder"""
 
-    if not os.path.isdir(libtgt):
-        os.makedirs(libtgt)
+    if os.path.isdir(src):
+        if os.path.isdir(tgt):
+            shutil.rmtree(tgt)
 
-    if toolz.file.overwrite(libsrc, libtgt):
-        print(f"{done} '{mylib}' deployed in '/usr/local/bin'")
+        try:
+            shutil.copytree(src, tgt, symlinks=True)
+        except EnvironmentError:
+            return False
+    else:
+        if os.path.exists(tgt):
+            os.remove(tgt)
+
+        try:
+            shutil.copy(src, tgt, follow_symlinks=False)
+        except EnvironmentError:
+            return False
+
+    return True
+
+
+def deploy_lib(src, mylib):
+    lib_src = os.path.join(src, mylib)
+
+    _USERNAME = os.getenv("SUDO_USER") or os.getenv("USER")
+    _HOME = os.path.expanduser(f"~{_USERNAME}")
+
+    bashrc = f"{_HOME}/.config/bash/bashrc"
+    tmp_file = "/tmp/bashrc"
+
+    overwrite(bashrc, tmp_file)
+
+    _GROUP = pathlib.Path(bashrc).group()
+
+    if not os.path.isfile(bashrc):
+        bashrc =f"{_HOME}/.bashrc"
+
+    with open(tmp_file, "r") as f:
+        bashrc_content = f.read()
+        if "PYTHONPATH" in bashrc_content and src not in bashrc_content:
+            with open (tmp_file, "r") as oldf, open(bashrc, "w") as newf:
+                print("Editing bashrc")
+                for line in oldf:
+                    if line.startswith("export PYTHONPATH"):
+                        oldline = line.strip('\n')
+                        newline = f"{oldline}:{src}\n"
+                        newf.write(newline)
+                    else:
+                        newf.write(line)
+        elif "PYTHONPATH" not in bashrc_content:
+            with open(bashrc, "a") as newf:
+                print("Expanding bashrc")
+                newline = f"\nexport PYTHONPATH={src}\n"
+                newf.write(newline)
+
+        shutil.chown(bashrc, _USERNAME, _GROUP)
 
 
 def deploy_scripts(src, tgt):
@@ -48,7 +97,7 @@ def deploy_scripts(src, tgt):
         print(f"{warning} '{not_to_deploy}.py' not deployed")
 
     for script in scripts:
-        if toolz.file.overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
+        if overwrite(f"{src}/{script}.py", f"{tgt}/{script}"):
             print(f"{done} '{script}' deployed in '/usr/local/bin'")
         else:
             print(f"{error} '{script}' failed to be deployed")
@@ -69,5 +118,7 @@ if __name__ == "__main__":
     src = os.path.dirname(os.path.realpath(__file__))
     tgt = "/usr/local/bin"
 
-    deploy_lib(src, tgt)
+    mylib = "toolz"
+
+    deploy_lib(src, mylib)
     deploy_scripts(src, tgt)
