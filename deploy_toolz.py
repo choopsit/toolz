@@ -28,30 +28,6 @@ def usage(errcode=0):
     exit(errcode)
 
 
-<<<<<<< HEAD
-def overwrite(src, tgt):
-    """Overwrite file or folder"""
-
-    if os.path.isdir(src):
-        if os.path.isdir(tgt):
-            shutil.rmtree(tgt)
-
-        try:
-            shutil.copytree(src, tgt, symlinks=True)
-        except EnvironmentError:
-            return False
-    else:
-        if os.path.exists(tgt):
-            os.remove(tgt)
-
-        try:
-            shutil.copy(src, tgt, follow_symlinks=False)
-        except EnvironmentError:
-            return False
-
-    return True
-
-
 def deploy_lib(src, tgt):
     mylib = "toolz"
     libsrc = os.path.join(src, mylib)
