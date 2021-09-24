@@ -3,8 +3,7 @@
 import os
 import sys
 import re
-import shutil
-import tempfile
+import toolz
 
 __description__ = "Deploy scripts to '/usr/local/bin'"
 __author__ = "Choops <choopsbd@gmail.com>"
@@ -29,71 +28,6 @@ def usage(errcode=0):
     exit(errcode)
 
 
-def overwrite(src, tgt):
-    if os.path.isdir(src):
-        if os.path.isdir(tgt):
-            shutil.rmtree(tgt)
-
-        try:
-            shutil.copytree(src, tgt, symlinks=True)
-        except EnvironmentError:
-            return False
-    else:
-        if os.path.exists(tgt):
-            os.remove(tgt)
-
-        try:
-            shutil.copy(src, tgt, follow_symlinks=False)
-        except EnvironmentError:
-            return False
-
-    return True
-
-
-def deploy_lib(lib_src):
-    env_file = "/etc/environment"
-    tmp_file = "/tmp/environment"
-
-    overwrite(env_file, tmp_file)
-
-    with open(tmp_file, "r") as f:
-        my_env = f.read()
-        if "PYTHONPATH" not in my_env:
-            print(f"{done} PYTHONPATH set\n")
-
-            with open(env_file, "a") as newf:
-                newf.write(f"PYTHONPATH={lib_src}")
-        elif lib_src not in my_env:
-            print(f"{done} PYTHONPATH updated")
-
-            with open(tmp_file, "r") as oldf, open(env_file, "w") as newf:
-                for line in oldf:
-                    if "PYTHONPATH" in line:
-                        old_line = line.strip("\n")
-                        newf.write(f"{old_line}:{lib_src}")
-                    else:
-                        newf.write(line)
-        else:
-            print(f"{done} PYTHONPATH already up to date")
-
-
-def symlink_force(target, link_name):
-    link_dir = os.path.dirname(link_name)
-
-    while True:
-        temp_link_name = tempfile.mktemp(dir=link_dir)
-        try:
-            os.symlink(target, temp_link_name)
-            break
-        except FileExistsError:
-            pass
-    try:
-        os.replace(temp_link_name, link_name)
-    except OSError:
-        os.remove(temp_link_name)
-        raise
-
-
 def deploy_scripts(src, tgt):
     scripts = [f.replace(".py", "") for f in os.listdir(src) if f.endswith(".py")]
 
@@ -106,7 +40,7 @@ def deploy_scripts(src, tgt):
         script_tgt = f"{os.path.join(src, script)}.py"
         script_lnk = f"{os.path.join(tgt, script)}"
 
-        symlink_force(script_tgt, script_lnk)
+        toolz.file.symlink_force(script_tgt, script_lnk)
 
         print(f"{done} '{script}' deployed in '/usr/local/bin'")
 
@@ -126,5 +60,4 @@ if __name__ == "__main__":
     src = os.path.dirname(os.path.realpath(__file__))
     tgt = "/usr/local/bin"
 
-    deploy_lib(src)
     deploy_scripts(src, tgt)

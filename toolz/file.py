@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import tempfile
 
 __description__ = "File management functions module"
 __author__ = "Choops <choopsbd@gmail.com>"
