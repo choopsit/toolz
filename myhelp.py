@@ -17,20 +17,20 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def print_help():
     cs = "\33[33m"
     for script in sorted(os.listdir("/usr/local/bin")):
-        okscript = False
-        okhelp = False
+        ok_script = False
+        ok_help = False
 
         if os.path.isdir(script):
             continue
@@ -48,12 +48,12 @@ def print_help():
                         cl = "\33[35m"
 
                 if line.startswith("__author__") and "Choops" in line:
-                    okscript = True
+                    ok_script = True
 
                 if "-h,--help:" in line:
-                    okhelp = True
+                    ok_help = True
 
-        if okscript and okhelp:
+        if ok_script and ok_help:
             print(f"{cs}{script}{c0} [{cl}{language}{c0}]:")
             os.system(f"{script} -h")
 

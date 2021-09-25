@@ -22,23 +22,23 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def get_host_info():
-    myhostname = socket.gethostname()
-    print(f"{ci}Hostname{c0}: {myhostname}")
+    my_hostname = socket.gethostname()
+    print(f"{ci}Hostname{c0}: {my_hostname}")
 
-    myfqdn = socket.getfqdn()
+    my_fqdn = socket.getfqdn()
 
-    if myfqdn != myhostname:
-        print(f"{ci}FQDN{c0}: {myfqdn}")
+    if my_fqdn != my_hostname:
+        print(f"{ci}FQDN{c0}: {my_fqdn}")
 
 
 def get_mtu(ifname):
@@ -68,21 +68,21 @@ def get_ip(ifname):
 
 
 def get_gw():
-    getgw_cmd = "ip r | grep default | awk '{print $3}'"
+    get_gw_cmd = "ip r | grep default | awk '{print $3}'"
 
-    return os.popen(getgw_cmd).read().rstrip("\n")
+    return os.popen(get_gw_cmd).read().rstrip("\n")
 
 
 def get_dns():
-    getdns_cmd = "dig | awk -F'(' '/SERVER:/{print $2}' | sed 's/.$//'"
+    get_dns_cmd = "dig | awk -F'(' '/SERVER:/{print $2}' | sed 's/.$//'"
 
-    return os.popen(getdns_cmd).read().rstrip("\n")
+    return os.popen(get_dns_cmd).read().rstrip("\n")
 
 
 def list_ifaces():
-    iflist = os.listdir('/sys/class/net/')
+    if_list = os.listdir('/sys/class/net/')
 
-    for iface in iflist:
+    for iface in if_list:
         if not re.match('^(lo|vif.*|virbr.*-.*|vnet.*)$', iface):
             print(f"{ci}Interface{c0}: {iface}")
             mtu = get_mtu(iface)

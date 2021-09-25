@@ -25,15 +25,15 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help:         Print this help")
     print(f"  -d,--default-logo: Use default logo")
     print()
-    exit(errcode)
+    exit(err_code)
 
 
 def default_logo():
@@ -110,20 +110,21 @@ def draw_logo(default):
 
 def get_host():
     ch = "\33[33m"
-    myuser = getpass.getuser()
-    myhostname = socket.gethostname()
+    my_user = getpass.getuser()
+    my_hostname = socket.gethostname()
 
-    return f"{ch}{myuser}{c0}@{ch}{myhostname}{c0}"
+    return f"{ch}{my_user}{c0}@{ch}{my_hostname}{c0}"
 
 
 def get_os():
-    with open("/etc/os-release", "r") as osfile:
-        for line in osfile:
+    with open("/etc/os-release", "r") as os_file:
+        for line in os_file:
             if line.startswith("PRETTY"):
-                osname = line.split("=")[1].rstrip("\n").replace("\"", "")
-    osname += " "+platform.machine()
+                os_name = line.split("=")[1].rstrip("\n").replace("\"", "")
 
-    return f"{ci}OS{c0}:     {osname}"
+    os_name += " "+platform.machine()
+
+    return f"{ci}OS{c0}:     {os_name}"
 
 
 def get_kernel():
@@ -138,18 +139,18 @@ def get_kernel():
 
 
 def get_packages(dist):
-    pkgcount = "N/A"
+    pkg_count = "N/A"
 
-    distok = ["debian", "raspbian", "ubuntu"]
+    dist_ok = ["debian", "raspbian", "ubuntu"]
 
-    if dist in distok:
+    if dist in dist_ok:
         list_cmd = ['dpkg', '-l']
         count_cmd = ['grep', '-c', '^i']
-        pkglist = subprocess.Popen(list_cmd, stdout=subprocess.PIPE)
-        pkgcount = subprocess.check_output(count_cmd, stdin=pkglist.stdout,
-                                           universal_newlines=True).rstrip("\n")
+        pkg_list = subprocess.Popen(list_cmd, stdout=subprocess.PIPE)
+        pkg_count = subprocess.check_output(count_cmd, stdin=pkg_list.stdout,
+                universal_newlines=True).rstrip("\n")
 
-    return f"{ci}Packages{c0}:  {pkgcount}"
+    return f"{ci}Packages{c0}:  {pkg_count}"
 
 
 def get_uptime():
@@ -162,25 +163,25 @@ def get_uptime():
 
 def get_shell():
     shell = os.path.basename(os.environ['SHELL'])
-    shellvf = str(subprocess.check_output(['bash', '--version'])).split()[3]
-    shellv = shellvf.split("(")[0]
+    shell_vf = str(subprocess.check_output(['bash', '--version'])).split()[3]
+    shell_v = shell_vf.split("(")[0]
 
-    return f"{ci}Shell{c0}:  {shell} {shellv}"
+    return f"{ci}Shell{c0}:  {shell} {shell_v}"
 
 
 def get_term():
     term = "N/A"
 
-    getterm = "x-terminal-emulator --version 2>/dev/null"
+    get_term_cmd = "x-terminal-emulator --version 2>/dev/null"
 
     try:
         os.environ['DISPLAY']
     except KeyError:
-        for line in os.popen(getterm):
+        for line in os.popen(get_term_cmd):
             if "terminator" in line:
                 term = "terminator"
     else:
-        term = os.popen(getterm).read().rstrip()
+        term = os.popen(get_term_cmd).read().rstrip()
 
     return f"{ci}Terminal{c0}:  {term}"
 
@@ -200,9 +201,10 @@ def get_de():
             if line.startswith("xfce4-about"):
                 de = line.split("(")[1][:-1]
 
-    wmchk_cmd = ['update-alternatives', '--list', 'x-window-manager']
+    wm_chk_cmd = ['update-alternatives', '--list', 'x-window-manager']
+
     try:
-        get_wm = subprocess.check_output(wmchk_cmd, universal_newlines=True)
+        get_wm = subprocess.check_output(wm_chk_cmd, universal_newlines=True)
         wm = get_wm.split("/")[-1].rstrip("\n")
     except subprocess.CalledProcessError:
         wm = "N/A"
@@ -218,8 +220,8 @@ def get_de():
 
 
 def get_perso(de, wm):
-    gtkth = ""
-    iconth = ""
+    gtk_th = ""
+    icon_th = ""
     home = str(pathlib.Path.home())
 
     if de == "XFCE" or wm == "xfwm4":
@@ -228,10 +230,10 @@ def get_perso(de, wm):
         with open(conf, "r") as f:
             for line in f:
                 if "\"ThemeName" in line:
-                    gtkth = line.split('="')[-1].split('"')[0]
+                    gtk_th = line.split('="')[-1].split('"')[0]
 
                 if "IconThemeName" in line:
-                    iconth = line.split('="')[-1].split('"')[0]
+                    icon_th = line.split('="')[-1].split('"')[0]
     elif wm == "awesome":
         conf = f"{home}/.gtkrc-2.0"
 
@@ -239,39 +241,39 @@ def get_perso(de, wm):
             with open(conf, "r") as f:
                 for line in f:
                     if line.startswith("gtk-theme-name"):
-                        gtkth = line.split('="')[-1].split('"')[0]
+                        gtk_th = line.split('="')[-1].split('"')[0]
 
                     if line.startswith("gtk-icon-theme-name"):
-                        iconth = line.split('="')[-1].split('"')[0]
+                        icon_th = line.split('="')[-1].split('"')[0]
 
     sep = "\t\t"
 
-    if len(iconth) < 5:
+    if len(icon_th) < 5:
         sep += "\t"
-    elif len(iconth) > 12:
+    elif len(icon_th) > 12:
         sep = "\t"
 
-    return f"{ci}Icons{c0}:  {iconth}{sep}{ci}GTK-theme{c0}: {gtkth}"
+    return f"{ci}Icons{c0}:  {icon_th}{sep}{ci}GTK-theme{c0}: {gtk_th}"
 
 
 def get_cpu():
-    threadcount = 0
+    thread_count = 0
     with open("/proc/cpuinfo", "r") as f:
         for line in f:
             if line.startswith("model name"):
-                threadcount += 1
+                thread_count += 1
                 cpu = line.split(': ')[1].rstrip("\n")
 
-    return f"{ci}CPU{c0}:    {cpu} ({threadcount} threads)"
+    return f"{ci}CPU{c0}:    {cpu} ({thread_count} threads)"
 
 
 def get_gpu():
-    pcilist_cmd = ['lspci']
+    pci_list_cmd = ['lspci']
     filter_cmd = ['grep', 'VGA']
-    pciinfo = subprocess.Popen(pcilist_cmd, stdout=subprocess.PIPE)
-    gpuinfo = subprocess.check_output(filter_cmd, stdin=pciinfo.stdout,
-                                      universal_newlines=True).rstrip("\n")
-    gpu = gpuinfo.split(": ")[1]
+    pci_info = subprocess.Popen(pci_list_cmd, stdout=subprocess.PIPE)
+    gpu_info = subprocess.check_output(filter_cmd, stdin=pci_info.stdout,
+            universal_newlines=True).rstrip("\n")
+    gpu = gpu_info.split(": ")[1]
 
     return f"{ci}GPU{c0}:    {gpu}"
 
@@ -280,52 +282,53 @@ def get_mem():
     with open("/proc/meminfo", "r") as f:
         for line in f:
             if line.startswith("MemTotal:"):
-                memtotal = int(line.split(None, 2)[1]) // 1024
+                mem_total = int(line.split(None, 2)[1]) // 1024
 
             if line.startswith("MemAvailable:"):
-                memused = memtotal - int(line.split(None, 2)[1]) // 1024
+                mem_used = mem_total - int(line.split(None, 2)[1]) // 1024
 
             if line.startswith("SwapTotal:"):
-                swaptotal = int(line.split(None, 2)[1]) // 1024
+                swap_total = int(line.split(None, 2)[1]) // 1024
 
             if line.startswith("SwapFree:"):
-                swapused = swaptotal - int(line.split(None, 2)[1]) // 1024
+                swap_used = swap_total - int(line.split(None, 2)[1]) // 1024
 
-    mrepart = f"{memused}/{memtotal}"
+    mem_repart = f"{mem_used}/{mem_total}"
+    swap_repart = f"{swap_used}/{swap_total}"
     msep = "\t"
 
-    if len(mrepart) < 10:
+    if len(mem_repart) < 10:
         msep += "\t"
 
-    ret = f"{ci}RAM{c0}:    {memused}/{memtotal}MB {msep}"
-    ret += f"{ci}Swap{c0}:      {swapused}/{swaptotal}MB"
+    ret = f"{ci}RAM{c0}:    {mem_repart}MB {msep}"
+    ret += f"{ci}Swap{c0}:      {swap_repart}MB"
 
     return ret
 
 
 def pick_infos(logo, dist):
-    infolist = []
-    infolist.append(get_host())
-    infolist.append(get_os())
-    infolist.append(f"{get_kernel()}\t{get_packages(dist)}")
-    infolist.append(get_uptime())
-    infolist.append(f"{get_shell()}\t\t{get_term()}")
+    info_list = []
+    info_list.append(get_host())
+    info_list.append(get_os())
+    info_list.append(f"{get_kernel()}\t{get_packages(dist)}")
+    info_list.append(get_uptime())
+    info_list.append(f"{get_shell()}\t\t{get_term()}")
 
     deinfo, de, wm = get_de()
 
-    infolist.append(deinfo)
-    infolist.append(get_perso(de, wm))
-    infolist.append(get_cpu())
+    info_list.append(deinfo)
+    info_list.append(get_perso(de, wm))
+    info_list.append(get_cpu())
 
     if dist != 'raspbian':
-        infolist.append(get_gpu())
+        info_list.append(get_gpu())
 
-    infolist.append(get_mem())
+    info_list.append(get_mem())
 
-    while len(infolist) < len(logo):
-        infolist.append("")
+    while len(info_list) < len(logo):
+        info_list.append("")
 
-    return infolist
+    return info_list
 
 
 def show_infos(logo, info):
@@ -336,17 +339,17 @@ def show_infos(logo, info):
 
 
 if __name__ == "__main__":
-    defaultlogo = False
+    default_logo = False
 
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     elif len(sys.argv) == 2 and sys.argv[1] in ["-d","--default-logo"]:
-        defaultlogo = True
+        default_logo = True
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument")
         usage(1)
 
-    mylogo, mydist = draw_logo(defaultlogo)
-    myinfo = pick_infos(mylogo, mydist)
+    my_logo, my_dist = draw_logo(default_logo)
+    my_info = pick_infos(my_logo, my_dist)
 
-    show_infos(mylogo, myinfo)
+    show_infos(my_logo, my_info)

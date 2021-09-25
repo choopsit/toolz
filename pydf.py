@@ -19,14 +19,14 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help")
     print(f"  -a,--all:  Show all filesystems including tmpfs\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def dim_separator(prop):
@@ -51,66 +51,66 @@ def color_fs(prop):
     return color
 
 
-def dim_fsunit(voltotal):
-    fsunit = "GB"
-    ufactor = (1024**3)
+def dim_fsunit(vol_total):
+    fs_unit = "GB"
+    u_factor = (1024**3)
 
-    if voltotal / ufactor > 1024:
-        fsunit = "TB"
-        ufactor *= 1024
+    if vol_total / u_factor > 1024:
+        fs_unit = "TB"
+        u_factor *= 1024
 
-    return fsunit, ufactor
+    return fs_unit, u_factor
 
 
-def color_line(mountpoint):
+def color_line(mount_point):
     fs_color = "\33[0m"
 
-    if mountpoint[1] in ["nfs", "cifs"]:
+    if mount_point[1] in ["nfs", "cifs"]:
         fs_color = "\33[34m"
-    elif mountpoint[1].startswith("fuse"):
+    elif mount_point[1].startswith("fuse"):
         fs_color = "\33[35m"
-    elif mountpoint[1].endswith("tmpfs"):
+    elif mount_point[1].endswith("tmpfs"):
         fs_color = "\33[37m"
 
     return fs_color
 
 
-def draw_fs(mountpoint):
-    ctxt = color_line(mountpoint)
+def draw_fs(mount_point):
+    ctxt = color_line(mount_point)
 
-    total = shutil.disk_usage(str(mountpoint[0]))[0]
-    used = shutil.disk_usage(str(mountpoint[0]))[1]
+    total = shutil.disk_usage(str(mount_point[0]))[0]
+    used = shutil.disk_usage(str(mount_point[0]))[1]
 
-    usedprop = 100 * used // total
+    used_prop = 100 * used // total
 
-    sepg = dim_separator(usedprop)
+    sepg = dim_separator(used_prop)
 
-    cfs = color_fs(usedprop)
+    cfs = color_fs(used_prop)
     cn = "\33[37m"
 
-    totallg = 40
-    usedlg = usedprop * totallg // 100
-    usedgr = usedlg * f"#"
-    freegr = (totallg - usedlg) * "-"
+    total_lg = 40
+    used_lg = used_prop * total_lg // 100
+    used_gr = used_lg * f"#"
+    free_gr = (total_lg - used_lg) * "-"
 
     unit, factor = dim_fsunit(total)
 
-    totalu = total / factor
-    usedu = used / factor
-    freeu = totalu - usedu
+    total_u = total / factor
+    used_u = used / factor
+    free_u = total_u - used_u
 
-    tline = f"-{ci}{mountpoint[2]}{c0}:\n"
-    tline += f"  {ci}type{c0}: {ctxt}{mountpoint[1]}\t"
-    tline += f"{ci}mounted on{c0}: {ctxt}{mountpoint[0]}{c0}"
+    tline = f"-{ci}{mount_point[2]}{c0}:\n"
+    tline += f"  {ci}type{c0}: {ctxt}{mount_point[1]}\t"
+    tline += f"{ci}mounted on{c0}: {ctxt}{mount_point[0]}{c0}"
 
-    repart = f"{usedu:.1f}/{totalu:.1f}{unit}"
+    repart = f"{used_u:.1f}/{total_u:.1f}{unit}"
     lensep = 13 - len(repart)
     sep = " " * lensep
 
-    gline = f"  [{cfs}{usedgr}{cn}{freegr}{c0}]{sepg}{cfs}{usedprop}{c0}%"
+    gline = f"  [{cfs}{used_gr}{cn}{free_gr}{c0}]{sepg}{cfs}{used_prop}{c0}%"
     gline += f" {sep}{ctxt}{repart}{c0}"
 
-    freesp= f"{freeu:.1f}{unit}"
+    freesp= f"{free_u:.1f}{unit}"
     lenfsep = 8 - len(freesp)
     fsep = " " * lenfsep
 
@@ -119,29 +119,29 @@ def draw_fs(mountpoint):
     print(f"{tline}\n{gline}")
 
 
-def fs_info(fsregex):
+def fs_info(fs_regex):
     print(f"{ci}Filesystems{c0}:")
 
     with open("/proc/mounts", "r") as f:
         mounts = [(line.split()[1].replace('\\040', ' '), line.split()[2], line.split()[0])
-                  for line in f.readlines()]
+                for line in f.readlines()]
 
-        for mntpoint in mounts:
-            if re.match(fsregex, mntpoint[1]):
-                draw_fs(mntpoint)
+        for mnt_point in mounts:
+            if re.match(fs_regex, mnt_point[1]):
+                draw_fs(mnt_point)
 
     print()
 
 
 if __name__ == "__main__":
-    myfsregex = 'ext|btrfs|lvm|xfs|zfs|ntfs|vfat|fuseblk|nfs$|nfs4|cifs'
+    my_fs_regex = 'ext|btrfs|lvm|xfs|zfs|ntfs|vfat|fuseblk|nfs$|nfs4|cifs'
 
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     elif len(sys.argv) == 2 and sys.argv[1] in ["-a","--all"]:
-        myfsregex += '|.*tmpfs'
+        my_fs_regex += '|.*tmpfs'
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument\n")
         usage(1)
 
-    fs_info(myfsregex)
+    fs_info(my_fs_regex)

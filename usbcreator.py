@@ -14,41 +14,41 @@ __description__ = "Create a bootable USB key to install Debian"
 __author__ = "Choops <choopsbd@gmail.com>"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  '{myscript} [OPTION] <DEVICE>' as root or using 'sudo'")
+    print(f"  '{my_script} [OPTION] <DEVICE>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def test_device(device):
-    reqpkgs = ["btrfs-progs", "lvm2", "isolinux", "live-build", "live-manual",
+    req_pkgs = ["btrfs-progs", "lvm2", "isolinux", "live-build", "live-manual",
                "live-tools"]
 
-    toolz.pkg.prerequisites(reqpkgs)
+    toolz.pkg.prerequisites(req_pkgs)
 
-    mydev = f"/dev/{device}"
+    my_dev = f"/dev/{device}"
 
     if not os.path.exists(mydev):
         print(f"{error} No device '{device}' available\n")
         exit(1)
 
     with open("/proc/mounts", "r") as f:
-        if mydev in f.read():
+        if my_dev in f.read():
             print(f"{error} '{device}' is mounted\n")
             exit(1)
 
-    chklvm = os.popen("pvs").read()
+    chk_lvm = os.popen("pvs").read()
 
-    if mydev in chklvm:
+    if my_dev in chk_lvm:
         print(f"{error} '{device}' is used for LVM\n")
         exit(1)
 
-    chkbtrfs = os.popen("btrfs fi show").read()
+    chk_btrfs = os.popen("btrfs fi show").read()
 
-    if mydev in chkbtrfs:
+    if my_dev in chk_btrfs:
         print(f"{error} '{device}' is used for btrfs volume\n")
         exit(1)
 
@@ -72,7 +72,7 @@ def choose_debian_version():
     isos[2] = f"weekly-builds/amd64/iso-cd/debian-testing"
 
     version = ""
-    isourl = ""
+    iso_url = ""
 
     vchoice = int()
     print(f"{ci}Available versions{c0}:")
@@ -86,18 +86,18 @@ def choose_debian_version():
         vchoice = int(vchoicestr)
     except ValueError:
         print(f"{error} Invalid choice '{vchoicestr}'\n")
-        version, isourl = choose_debian_version()
+        version, iso_url = choose_debian_version()
 
     for i in range(len(vlist)):
         if vchoice == i:
             version = vlist[vchoice]
-            isourl = f"{rl}/{isos[vchoice]}-amd64-netinst.iso"
+            iso_url = f"{rl}/{isos[vchoice]}-amd64-netinst.iso"
 
     if version == "":
         print(f"{error} Out of range choice '{vchoice}'\n")
-        version, isourl = choose_debian_version()
+        version, iso_url = choose_debian_version()
 
-    return version, isourl
+    return version, iso_url
 
 
 def create_usbkey(device, distro):
@@ -138,16 +138,17 @@ def create_usbkey(device, distro):
 def custom_live_codename():
     stable = "bullseye"
     testing = "bookworm"
-    okcodenames = [stable, testing, "sid"]
+    ok_codenames = [stable, testing, "sid"]
 
     print(f"{ci}Available Debian codenames{c0}:")
 
-    for i in range(len(okcodenames)):
-        print(f"  {i}) {ci}{okcodenames[i]}{c0}")
-    cchoicestr = input(f"Your choice [default: '{okcodenames[0]}'] ? ")
+    for i in range(len(ok_codenames)):
+        print(f"  {i}) {ci}{ok_codenames[i]}{c0}")
+
+    cchoicestr = input(f"Your choice [default: '{ok_codenames[0]}'] ? ")
 
     if cchoicestr == "":
-        codename = okcodenames[0]
+        codename = ok_codenames[0]
     else:
         try:
             cchoice = int(cchoicestr)
@@ -155,9 +156,9 @@ def custom_live_codename():
             print(f"{error} Invalid choice '{cchoicestr}'\n")
             codename = custom_live_codename()
 
-        for i in range(len(okcodenames)):
+        for i in range(len(ok_codenames)):
             if cchoice == i:
-                codename = okcodenames[cchoice]
+                codename = ok_codenames[cchoice]
 
         if codename == "":
             print(f"{error} Out of range choice '{cchoice}'\n")
@@ -215,21 +216,21 @@ def build_iso(codename, user, hostname):
     print(f"{ci}Preparing build...{c0}")
 
     build = datetime.datetime.today().strftime("%y%m%d")
-    workfolder = f"/tmp/{codename}_livebuild_{build}"
+    work_folder = f"/tmp/{codename}_livebuild_{build}"
 
-    if os.path.isdir(workfolder):
-        shutil.rmtree(workfolder)
+    if os.path.isdir(work_folder):
+        shutil.rmtree(work_folder)
 
     os.makedirs(f"{workfolder}/config/package-lists")
-    clpkgs = ["live-boot", "live-config", "live-config-systemd",
-              "task-desktop", "task-xfce-desktop", "sudo", "firmware-linux",
-              "build-essential", "ssh", "vim", "git", "tree", "curl", "rsync",
-              "p7zip-full", "htop", "docker", "docker-compose", "terminator",
-              "mpv", "gthumb", "gimp", "arc-theme", "papirus-icon-theme"]
+    cl_pkgs = ["live-boot", "live-config", "live-config-systemd",
+            "task-desktop", "task-xfce-desktop", "sudo", "firmware-linux",
+            "build-essential", "ssh", "vim", "git", "tree", "curl", "rsync",
+            "p7zip-full", "htop", "docker", "docker-compose", "terminator",
+            "mpv", "gthumb", "gimp", "arc-theme", "papirus-icon-theme"]
 
     with open(f"{workfolder}/config/package-lists/live.list.chroot", "w") as f:
-        for clpkg in clpkgs:
-            f.write(clpkg+"\n")
+        for cl_pkg in cl_pkgs:
+            f.write(cl_pkg+"\n")
 
     with open(f"{workfolder}/config/build", "w") as f:
         f.write("[Image]\n")
@@ -243,9 +244,9 @@ def build_iso(codename, user, hostname):
         f.write(f"Name: {codename}-custom"+"\n")
 
     build= "/usr/share/doc/live-build/examples/auto"
-    shutil.copytree(build, f"{workfolder}/auto")
+    shutil.copytree(build, f"{work_folder}/auto")
 
-    with open(f"{workfolder}/auto/config", "w") as f:
+    with open(f"{work_folder}/auto/config", "w") as f:
         f.write('#!/bin/sh\n\n')
         f.write('set -e\n\n')
         f.write('lb config noauto \\\n')
@@ -268,18 +269,18 @@ def build_iso(codename, user, hostname):
         f.write('    "${@}"\n')
 
     print(f"{ci}Building ISO image...{c0}")
-    os.chdir(workfolder)
+    os.chdir(work_folder)
     os.system("lb config")
 
     if os.system("lb build") == 0:
         customiso = ""
 
-        for filename in os.listdir(workfolder):
+        for filename in os.listdir(work_folder):
             if filename.endswith(".iso"):
-                customiso = os.path.join(workfolder, filename)
+                customiso = os.path.join(work_folder, filename)
 
         if customiso == "":
-            print(f"{error} Can not find ISO image in '{workfolder}'")
+            print(f"{error} Can not find ISO image in '{work_folder}'")
             exit(1)
 
         print(f"{done} ISO image built: '{customiso}")
@@ -391,16 +392,16 @@ if __name__ == "__main__":
         print(f"{error} Need higher privileges\n")
         exit(1)
     elif test_device(sys.argv[1]):
-        mykey = choose_key_format()
+        my_key = choose_key_format()
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument\n")
         usage(1)
 
-    mydistros = ["Debian", "Xubuntu LTS", "Clonezilla"]
+    my_distros = ["Debian", "Xubuntu LTS", "Clonezilla"]
 
-    if mykey in range(len(mydistros)):
-        create_usbkey(sys.argv[1], mydistros[mykey])
-    elif mykey == 3:
+    if my_key in range(len(my_distros)):
+        create_usbkey(sys.argv[1], my_distros[my_key])
+    elif my_key == 3:
         create_custom_live(sys.argv[1])
-    elif mykey == 4:
+    elif my_key == 4:
         create_custom_live(sys.argv[1], persistence=True)

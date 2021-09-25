@@ -21,14 +21,14 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help")
     print()
-    exit(errcode)
+    exit(err_code)
 
 
 def personalization(home):

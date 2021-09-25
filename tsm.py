@@ -25,10 +25,10 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION]")
+    print(f"  {my_script} [OPTION]")
     print(f"  {ci}if no option{c0}: Show queue evolution refreshing every 2s")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help:          Print this help")
@@ -41,7 +41,7 @@ def usage(errcode=0):
     print(f"  -r,--restart:       Restart daemon")
     print(f"  -s,--status:        Daemon status")
     print(f"  -t,--test-port:     Test port\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def show_queue():
@@ -53,10 +53,10 @@ def show_queue():
 
             print(f"{ci}Transmission queue{c0} - {ci}{timenow}{c0}")
 
-            torrentqueue = os.popen("transmission-remote -l").read()
+            torrent_queue = os.popen("transmission-remote -l").read()
             cl = "\33[36m"
 
-            for line in torrentqueue.split("\n"):
+            for line in torrent_queue.split("\n"):
                 print(f"{cl}{line}{c0}")
                 cl = "\33[0m"
 
@@ -67,11 +67,11 @@ def show_queue():
             exit(0)
 
 
-def test_torrentfile(myfile):
-    if os.path.isfile(myfile) and myfile.endswith(".torrent"):
+def test_torrentfile(my_file):
+    if os.path.isfile(my_file) and my_file.endswith(".torrent"):
         return True
     else:
-        print(f'{error} "{myfile}" is not a valid torrent file\n')
+        print(f'{error} "{my_file}" is not a valid torrent file\n')
         exit(1)
 
 
@@ -92,14 +92,14 @@ def add_all():
     dlfolder = f"{home}/Downloads"
 
     for myfile in os.listdir(dlfolder):
-        testmyfile = os.path.isfile(f"{dlfolder}/{myfile}")
+        test_myfile = os.path.isfile(f"{dlfolder}/{myfile}")
 
-        if testmyfile and myfile.endswith(".torrent"):
+        if test_myfile and myfile.endswith(".torrent"):
             tlist.append(f"{dlfolder}/{myfile}")
 
     if tlist != []:
-        for newtorrent in tlist:
-            add_one(newtorrent)
+        for new_torrent in tlist:
+            add_one(new_torrent)
     else:
         print(f'{error} No torrent file in "~/Downloads"\n')
         exit(1)
@@ -107,13 +107,13 @@ def add_all():
     print()
 
 
-def test_torrentid(myid):
+def test_torrentid(my_id):
     ret = False
     tidcheck_cmd = f"transmission-remote -l"
     tidinfo = os.popen(tidcheck_cmd).read()
 
     for line in tidinfo.split("\n"):
-        if re.match(f"\s+{myid}\s.*", line):
+        if re.match(f"\s+{my_id}\s.*", line):
             ret = True
 
     return ret
@@ -122,8 +122,8 @@ def test_torrentid(myid):
 def remove_one(tid):
     tname = ""
 
-    getid_cmd = f'transmission-remote -t {tid} -i'
-    tinfo = os.popen(getid_cmd).read()
+    get_id_cmd = f'transmission-remote -t {tid} -i'
+    tinfo = os.popen(get_id_cmd).read()
 
     for line in tinfo.split("\n"):
         if "Name:" in line:
@@ -158,7 +158,7 @@ def restart_daemon():
     elif os.getuid() != 0:
         pass
     else:
-        print(f"{error} '{myuser}' can not restart transmission-daemon\n")
+        print(f"{error} '{my_user}' can not restart transmission-daemon\n")
 
     print(f"{ci}Restarting daemon...{c0}")
 
@@ -174,15 +174,15 @@ def daemon_status():
 
 
 def test_port():
-    tsmconf = f"{home}/.config/transmission-daemon/settings.json"
+    tsm_conf = f"{home}/.config/transmission-daemon/settings.json"
 
-    if not os.path.isfile(tsmconf):
+    if not os.path.isfile(tsm_conf):
         print(f"{error} Can not find transmission-daemon configuration file\n")
         exit(1)
 
     port = ""
 
-    with open(tsmconf, "r") as f:
+    with open(tsm_conf, "r") as f:
         for line in f:
             if '"peer-port":' in line:
                 port = line.split()[1].strip(',')
@@ -197,15 +197,15 @@ def test_port():
         exit(1)
 
 
-myuser = getpass.getuser()
+my_user = getpass.getuser()
 home = pathlib.Path.home()
 
 if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     else:
-        reqpkgs = ["transmission-daemon"]
-        toolz.pkg.prerequisites(reqpkgs)
+        req_pkgs = ["transmission-daemon"]
+        toolz.pkg.prerequisites(req_pkgs)
 
         if len(sys.argv) == 1:
             show_queue()

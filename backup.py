@@ -25,20 +25,20 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {myscript} [OPTION] <BACKUP_FOLDER>")
+    print(f"  {my_script} [OPTION] <BACKUP_FOLDER>")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def test_backupfolder(folder):
     forbiddens = ["/", "/bin", "/boot", "/dev", "/etc", "/home", "/initrd.img",
-                  "/initrd.img.old", "/lib", "/lib32", "/lib64", "/libx32",
-                  "/media", "/mnt", "/opt", "/proc", "/root", "/run", "/srv",
-                  "/sys", "/tmp", "/usr", "/var"]
+            "/initrd.img.old", "/lib", "/lib32", "/lib64", "/libx32", "/media",
+            "/mnt", "/opt", "/proc", "/root", "/run", "/srv", "/sys", "/tmp",
+            "/usr", "/var"]
 
     if folder in forbiddens:
         print(f"{error} Invalid folder '{folder}'\n")
@@ -63,112 +63,115 @@ def test_backupfolder(folder):
     return True
 
 
-def backup(destfolder):
-    homebackups = [".profile", ".face", ".kodi", ".mozilla", ".vim", ".steam",
-                   ".config/autostart", ".config/bash", ".config/conky",
-                   ".config/dconf", ".config/evince", ".config/gedit",
-                   ".config/GIMP", ".config/libvirt", ".config/Mousepad",
-                   ".config/openvpn", ".config/plank", ".config/picom",
-                   ".config/pitivi", ".config/remmina", ".config/terminator",
-                   ".config/transmisson-daemon", ".config/Thunar",
-                   ".config/xfce4", ".local/bin", ".local/share/applications",
-                   ".local/share/fonts", ".local/share/gedit",
-                   ".local/share/gtksourceview-3.0",
-                   ".local/share/gtksourceview-4", ".local/share/lollypop",
-                   ".local/share/plank", ".local/share/remmina",
-                   ".local/share/rhythmbox", ".local/share/xfce4", "Documents",
-                   "Music", "Pictures", "Videos", "Work", "Games"]
+def backup(dest_folder):
+    home_backups = [".profile", ".face", ".kodi", ".mozilla", ".vim", ".steam",
+            ".config/autostart", ".config/bash", ".config/dconf",
+            ".config/evince", ".config/GIMP", ".config/libvirt",
+            ".config/Mousepad", ".config/openvpn", ".config/plank",
+            ".config/terminator", ".config/transmisson-daemon",
+            ".config/Thunar", ".config/xfce4", ".local/bin",
+            ".local/share/applications", ".local/share/fonts",
+            ".local/share/gtksourceview-3.0", ".local/share/gtksourceview-4",
+            ".local/share/lollypop", ".local/share/plank",
+            ".local/share/rhythmbox", ".local/share/xfce4", "Documents",
+            "Music", "Pictures", "Videos", "Work", "Games"]
 
-    cfgfiles = ["/etc/fstab", "/etc/exports", "/etc/hosts",
-                "/etc/ssh/sshd_config", "/etc/sysctl.d/99-swappiness.conf",
-                "/etc/pulse/daemon.conf", "/etc/apt/sources.list",
-                "/usr/share/lightdm/lightdm.conf.d/01_my.conf",
-                "/usr/share/X11/xorg.conf.d/10-nvidia.conf"]
+    cfg_files = ["/etc/fstab", "/etc/exports", "/etc/hosts",
+            "/etc/ssh/sshd_config", "/etc/sysctl.d/99-swappiness.conf",
+            "/etc/pulse/daemon.conf", "/etc/apt/sources.list",
+            "/usr/share/lightdm/lightdm.conf.d/01_my.conf",
+            "/usr/share/X11/xorg.conf.d/10-nvidia.conf"]
 
-    morebackups = []
+    more_backups = []
 
     if socket.gethostname() == "mrchat":
-        morebackups = ["/volumes/speedix/Music", "/volumes/speedix/Games"]
+        more_backups = ["/volumes/speedix/Music", "/volumes/speedix/Games"]
 
     today = datetime.datetime.today().strftime("%y%m")
-    bkpfolder = f"{destfolder}/{today}_{socket.gethostname()}"
+    bkp_folder = f"{dest_folder}/{today}_{socket.gethostname()}"
 
-    if not os.path.exists(bkpfolder):
-        os.makedirs(bkpfolder)
+    if not os.path.exists(bkp_folder):
+        os.makedirs(bkp_folder)
 
-    myuser = getpass.getuser()
-    myhome = pathlib.Path.home()
+    my_user = getpass.getuser()
+    my_home = pathlib.Path.home()
 
-    rsynccmd = "rsync -qOatzulr --delete --exclude='*~'"
+    rsync_cmd = "rsync -qOatzulr --delete --exclude='*~'"
 
-    errhome = 0
+    err_home = 0
 
-    for bkpelement in homebackups:
-        bkpsrc = f"{myhome}/{bkpelement}"
+    for bkp_element in home_backups:
+        bkp_src = f"{my_home}/{bkp_element}"
 
-        if os.path.exists(bkpsrc):
-            bkpsubfolder = os.path.dirname(bkpsrc)
+        if os.path.exists(bkp_src):
+            bkp_subfolder = os.path.dirname(bkp_src)
 
-            if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
-                os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+            if not os.path.exists(f"{bkp_folder}{bkp_subfolder}"):
+                os.makedirs(f"{bkp_folder}{bkp_subfolder}")
 
-            bkpdst = f"{bkpfolder}/{bkpsubfolder}"
-            bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+            bkp_dst = f"{bkp_folder}/{bkp_subfolder}"
+            bkp_cmd = f"{rsync_cmd} {bkp_src} {bkp_dst}"
 
             if os.system(bkp_cmd) != 0:
-                errhome += 1
+                err_home += 1
 
-    if errhome == 0:
+    if err_home == 0:
         ecol = "\33[32m"
     else:
         ecol = "\33[31m"
 
-    print(f"{done} {myuser}'s home backuped in '{bkpfolder}{myhome}'", end=" ")
-    print(f"with {ecol}{errhome}{c0} error(s)")
+    home_bkp_ret = f"{done} {my_user}'s home backuped in '{bkp_folder}"
+    home_bkp_ret += f"{my_home}' with {ecol}{err_home}{c0} error(s)"
+    
+    print(home_bkp_ret)
 
-    errcfg = 0
+    err_cfg = 0
 
-    for bkpsrc in cfgfiles:
-        if os.path.exists(bkpsrc):
-            bkpsubfolder = os.path.dirname(bkpsrc)
+    for bkp_src in cfg_files:
+        if os.path.exists(bkp_src):
+            bkp_subfolder = os.path.dirname(bkp_src)
 
-            if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
-                os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+            if not os.path.exists(f"{bkp_folder}{bkp_subfolder}"):
+                os.makedirs(f"{bkp_folder}{bkp_subfolder}")
 
-            bkpdst = f"{bkpfolder}/{bkpsubfolder}"
-            bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+            bkp_dst = f"{bkp_folder}/{bkp_subfolder}"
+            bkp_cmd = f"{rsync_cmd} {bkp_src} {bkp_dst}"
 
             if os.system(bkp_cmd) != 0:
-                errcfg += 1
+                err_cfg += 1
 
-    if errcfg == 0:
+    if err_cfg == 0:
         ecol = "\33[32m"
     else:
         ecol = "\33[31m"
 
-    print(f"{done} Config files backuped in '{bkpfolder}'", end=" ")
-    print(f"with {ecol}{errcfg}{c0} error(s)")
+    cfg_bkp_ret = f"{done} Config files backuped in '{bkp_folder}' with"
+    cfg_bkp_ret += f"{ecol}{err_cfg}{c0} error(s)"
 
-    for bkpsrc in morebackups:
-        if os.path.exists(bkpsrc):
-            errother = 0
+    print(cfg_bkp_ret)
+
+    for bkp_src in more_backups:
+        if os.path.exists(bkp_src):
+            err_other = 0
             ecol = "\33[32m"
-            bkpsubfolder = os.path.dirname(bkpsrc)
+            bkp_subfolder = os.path.dirname(bkp_src)
 
-            if not os.path.exists(f"{bkpfolder}{bkpsubfolder}"):
-                os.makedirs(f"{bkpfolder}{bkpsubfolder}")
+            if not os.path.exists(f"{bkp_folder}{bkp_subfolder}"):
+                os.makedirs(f"{bkp_folder}{bkp_subfolder}")
 
-            bkpdst = f"{bkpfolder}{bkpsubfolder}"
-            bkp_cmd = f"{rsynccmd} {bkpsrc} {bkpdst}"
+            bkp_dst = f"{bkp_folder}{bkp_subfolder}"
+            bkp_cmd = f"{rsync_cmd} {bkpsrc} {bkpdst}"
 
             if os.system(bkp_cmd) != 0:
-                errother += 1
+                err_other += 1
 
-            if errother != 0:
+            if err_other != 0:
                 ecol = "\33[31m"
 
-            print(f"{done} '{bkpsrc}' backuped in '{bkpfolder}'", end=" ")
-            print(f"with {ecol}{errother}{c0} error(s)")
+            more_bkp_ret = f"{done} '{bkpsrc}' backuped in '{bkpfolder}'"
+            more_bkp_ret += f"with {ecol}{errother}{c0} error(s)"
+
+            print(more_bkp_ret)
 
     print()
 
@@ -180,8 +183,8 @@ if __name__ == "__main__":
         print(f"{error} Need an argument\n")
         usage(1)
     elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):
-        reqpkgs = ["rsync"]
-        toolz.pkg.prerequisites(reqpkgs)
+        req_pkgs = ["rsync"]
+        toolz.pkg.prerequisites(req_pkgs)
         backup(sys.argv[1])
     else:
         print(f"{error} Bad argument\n")

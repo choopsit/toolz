@@ -20,30 +20,30 @@ done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
 
-def usage(errcode=0):
-    myscript = os.path.basename(__file__)
+def usage(err_code=0):
+    my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  '{myscript} [OPTION] <BUILDFOLDER>' as root or using 'sudo'")
+    print(f"  '{my_script} [OPTION] <BUILDFOLDER>' as root or using 'sudo'")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
-    exit(errcode)
+    exit(err_code)
 
 
 def build_deb_package(folder):
-    myuser = pathlib.Path(folder).owner()
-    mygroup = pathlib.Path(folder).group()
+    my_user = pathlib.Path(folder).owner()
+    my_group = pathlib.Path(folder).group()
 
     toolz.file.rchown(folder, "root", "root")
 
     os.system(f"dpkg-deb --build {folder}")
 
     for target in [folder, f"{folder}.deb"]:
-        toolz.file.rchown(target, myuser, mygroup)
+        toolz.file.rchown(target, my_user, my_group)
 
-    destfolder = os.path.abspath(pathlib.Path(folder).parent)
-    pkgname = os.path.basename(folder)
+    dest_folder = os.path.abspath(pathlib.Path(folder).parent)
+    pkg_name = os.path.basename(folder)
 
-    print(f"{done} '{pkgname}.deb' generated in '{destfolder}'")
+    print(f"{done} '{pkg_name}.deb' generated in '{dest_folder}'")
 
 
 if __name__ == "__main__":
