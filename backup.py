@@ -160,7 +160,7 @@ def backup(dest_folder):
                 os.makedirs(f"{bkp_folder}{bkp_subfolder}")
 
             bkp_dst = f"{bkp_folder}{bkp_subfolder}"
-            bkp_cmd = f"{rsync_cmd} {bkpsrc} {bkpdst}"
+            bkp_cmd = f"{rsync_cmd} {bkp_src} {bkp_dst}"
 
             if os.system(bkp_cmd) != 0:
                 err_other += 1
@@ -168,8 +168,8 @@ def backup(dest_folder):
             if err_other != 0:
                 ecol = "\33[31m"
 
-            more_bkp_ret = f"{done} '{bkpsrc}' backuped in '{bkpfolder}'"
-            more_bkp_ret += f"with {ecol}{errother}{c0} error(s)"
+            more_bkp_ret = f"{done} '{bkp_src}' backuped in '{bkp_folder}'"
+            more_bkp_ret += f"with {ecol}{err_other}{c0} error(s)"
 
             print(more_bkp_ret)
 

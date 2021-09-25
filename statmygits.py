@@ -49,7 +49,7 @@ if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     elif len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
-        gitstock = sys.argv[1]
+        git_stock = sys.argv[1]
     elif len(sys.argv) == 1:
         git_stock = pathlib.Path().absolute()
         if getpass.getuser() == "choops":
