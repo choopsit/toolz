@@ -19,12 +19,14 @@ error = f"{ce}E{c0}:"
 done = f"{cok}OK{c0}:"
 warning = f"{cw}W{c0}:"
 
-toolz_folder = os.path.dirname(os.path.realpath(__file__))
-conf_srcfolder = f"{toolz_folder}/_resources"
+lib_folder = os.path.dirname(os.path.realpath(__file__))
+conf_srcfolder = f"{lib_folder}/_resources"
 
 
 def test_conf(conf_file, test_pattern):
-    """Test if a line starts with a pattern in a configuration file"""
+    """
+    Test if a line starts with a pattern in a configuration file
+    """
 
     if os.path.isfile(conf_file):
         with open(conf_file, "r") as f:
@@ -36,7 +38,9 @@ def test_conf(conf_file, test_pattern):
 
 
 def swap():
-    """Apply swap configuration"""
+    """
+    Apply swap configuration
+    """
 
     swap_conf = "/etc/sysctl.d/99-swappiness.conf"
 
@@ -50,7 +54,9 @@ def swap():
 
 
 def ssh():
-    """Apply ssh configuration: allow root login"""
+    """
+    Apply ssh configuration: allow root login
+    """
 
     ssh_conf_base = "/etc/ssh/sshd_config"
     ssh_conf_rootok = f"{sshconf_base}.d/allow_root.conf"
@@ -67,7 +73,9 @@ def ssh():
 
 
 def bash(home):
-    """Apply bash configuration"""
+    """
+    Apply bash configuration
+    """
 
     bash_src = f"{conf_srcfolder}/bash"
     bash_cfg = f"{home}/.config/bash"
@@ -100,7 +108,9 @@ def bash(home):
 
 
 def vim(home):
-    """Apply vim configuration"""
+    """
+    Apply vim configuration
+    """
 
     vim_src = f"{conf_srcfolder}/vim"
     vim_cfg = f"{home}/.vim"
@@ -122,6 +132,7 @@ def vim(home):
     rawgit_url = "https://raw.githubusercontent.com/"
     plug_url = f"{rawgit_url}junegunn/vim-plug/master/plug.vim"
     plug_tgt = f"{plug_folder}/plug.vim"
+
     urllib.request.urlretrieve(plug_url, plug_tgt)
 
     if home == "/root":
@@ -139,7 +150,9 @@ def vim(home):
 
 
 def root():
-    """Apply 'root' configuration"""
+    """
+    Apply 'root' configuration
+    """
 
     bash("/root")
     vim("/root")
@@ -147,7 +160,9 @@ def root():
 
 
 def lightdm():
-    """Make username choosable in a list"""
+    """
+    Make username choosable in a list in Display Manager
+    """
 
     lightdm_conf = "/usr/share/lightdm/lightdm.conf.d/10_my.conf"
     tmp_file = "/tmp/lightdm_perso.conf"
@@ -168,7 +183,9 @@ def lightdm():
 
 
 def networkmanager():
-    """Make network-manager manage already configured interfaces without it"""
+    """
+    Make network-manager manage already configured interfaces without it
+    """
 
     nw_conf = "/etc/network/interfaces"
     iface = os.popen("ip r | grep default").read().split()[4]
@@ -185,17 +202,13 @@ def networkmanager():
 
 
 def pulseaudio():
-    """Fix stupid default pulseaudio max volume on new application launch"""
+    """
+    Fix stupid default pulseaudio max volume on new application launch
+    """
 
     pulse_conf = "/etc/pulse/daemon.conf"
-    pulse_ok = False
 
-    with open(pulse_conf, "r") as f:
-        for line in f:
-            if line.startswith("flat-volumes = no"):
-                pulse_ok = True
-
-    if not pulse_ok:
+    if not test_conf(pulse_conf, "flat-volumes = no"):
         tmp_file = "/tmp/pulse_daemon.conf"
 
         file.overwrite(pulse_conf, tmp_file)
@@ -209,51 +222,51 @@ def pulseaudio():
 
 
 def redshift():
-    """Link redshift to geoclue to follow local time"""
+    """
+    Link redshift to geoclue to follow local time
+    """
 
     geoclue_conf = "/etc/geoclue/geoclue.conf"
-    redshift_ok = False
 
-    with open(geoclue_conf, "r") as f:
-        for line in f:
-            if "redshift" in line:
-                redshift_ok = True
-
-    if not redshift_ok:
+    if not test_conf(geoclue_conf, "[redshift]"):
         with open(geoclue_conf, "a") as f:
             f.write("\n[redshift]\nallowed=true\nsystem=false\nusers=\n")
 
 
 def transmissiond(user, home):
-    """Deploy transmission-deamon configuration with {user} as daemon user"""
+    """
+    Deploy transmission-deamon configuration with {user} as daemon user
+    """
 
     os.system("systemctl stop transmission-daemon")
+
     tsmd_service_dir = "/etc/systemd/system/transmission-daemon.service.d/"
     tsmd_service_conf = f"{tsmd_confdir}/override.conf"
+
+    tsmd_conf_dir = f"{home}/.config/transmission-daemon"
+    tsmd_conf_orig = "/var/lib/transmission-daemon/info/settings.json"
+    tsmd_user_conf = f"{tsmd_conf_dir}/settings.json"
+    tmp_file = "/tmp/tsmdsettings.json"
+
+    sysctl_cmds = ["daemon-reload", "start transmission-daemon",
+            "stop transmission-daemon"]
 
     if not os.path.isdir(tsmd_service_dir):
         os.makedirs(tsmd_service_dir)
 
-    os.system("systemctl stop transmission-daemon")
+    os.system(f"systemctl {sysctl_cmds[-1]}")
 
     with open(tsmd_service_conf, "w") as f:
         f.write(f"[Service]\nUser={user}\n")
 
-    os.system("systemctl daemon-reload")
-    os.system("systemctl start transmission-daemon")
-    os.system("systemctl stop transmission-daemon")
-
-    tsmd_conf_dir = f"{home}/.config/transmission-daemon"
-    tsmd_user_conf = f"{tsmd_conf_dir}/settings.json"
-    tsmd_conf_orig = "/var/lib/transmission-daemon/info/settings.json"
+    for sysctl_cmd in sysctl_cmds:
+        os.system(f"systemctl {sysctl_cmd}")
 
     if not os.path.isdir(tsmd_conf_dir):
         os.makedirs(tsmd_conf_dir)
 
     if not os.path.isfile(tsmd_user_conf):
         shutil.copy(tsmd_conf_orig, tsmd_user_conf)
-
-    tmp_file = "/tmp/tsmdsettings.json"
 
     file.overwrite(tsmd_user_conf, tmp_file)
 
@@ -264,20 +277,22 @@ def transmissiond(user, home):
             else:
                 newf.write(line)
 
-    os.system("systemctl daemon-reload")
-    os.system("systemctl start transmission-daemon")
+    for sysctl_cmd[:-1] in sysctl_cmds:
+        os.system(f"systemctl {sysctl_cmd}")
 
 
 def gruvbox_gtk():
-    """Add gruvbox color scheme for gtk applications"""
+    """
+    Add gruvbox color scheme for gtk applications
+    """
 
     gruvbox_styles = ["gruvbox-dark.xml", "gruvbox-light.xml"]
 
     for style in gruvbox_styles:
         style_url = "https://raw.githubusercontent.com/morhetz/"
         style_url += f"gruvbox-contrib/master/gedit/{style}"
-        style_tgts = []
-        style_tgts.append(f"/usr/share/gtksourceview-3.0/styles/{style}")
+
+        style_tgts = [f"/usr/share/gtksourceview-3.0/styles/{style}"]
         style_tgts.append(style_tgts[0].replace("3.0", "4"))
 
         for style_tgt in style_tgts:
@@ -287,7 +302,9 @@ def gruvbox_gtk():
 
 
 def xfce(home):
-    "Apply default 'xfce' configuration for user"
+    """
+    Apply default 'xfce' configuration for user
+    """
 
     git_dir = f"{home}/Work/git"
 

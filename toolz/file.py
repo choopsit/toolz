@@ -42,7 +42,9 @@ def symlink_force(target, link_name):
 
 
 def overwrite(src, tgt):
-    """Overwrite file or folder"""
+    """
+    Overwrite file or folder
+    """
 
     if os.path.isdir(src):
         if os.path.isdir(tgt):
@@ -65,7 +67,9 @@ def overwrite(src, tgt):
 
 
 def rcopy(src, tgt):
-    """Recursive copy"""
+    """
+    Recursive copy
+    """
 
     for root, dirs, files in os.walk(src):
         for item in files:
@@ -95,26 +99,30 @@ def rcopy(src, tgt):
 
 
 def rchown(path, new_owner=None, new_group=None):
-    """Recursive chown"""
+    """
+    Recursive chown
+    """
 
     shutil.chown(path, new_owner, new_group)
 
     for dirpath, dirs, files in os.walk(path):
-        for mydir in dirs:
-            shutil.chown(os.path.join(dirpath, mydir), new_owner, new_group)
+        for my_dir in dirs:
+            shutil.chown(os.path.join(dirpath, my_dir), new_owner, new_group)
 
-        for myfile in files:
-            shutil.chown(os.path.join(dirpath, myfile), new_owner, new_group)
+        for my_file in files:
+            shutil.chown(os.path.join(dirpath, my_file), new_owner, new_group)
 
 
 def rchmod(path, perm):
-    """Recursive chmod"""
+    """
+    Recursive chmod
+    """
 
     os.chmod(path, perm)
 
     for root, dirs, files in os.walk(path):
-        for mydir in dirs:
-            os.chmod(os.path.join(root, mydir), perm)
+        for my_dir in dirs:
+            os.chmod(os.path.join(root, my_dir), perm)
 
-        for myfile in files:
-            os.chmod(os.path.join(root, myfile), perm)
+        for my_file in files:
+            os.chmod(os.path.join(root, my_file), perm)

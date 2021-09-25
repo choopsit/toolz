@@ -17,8 +17,10 @@ warning = f"{cw}W{c0}:"
 
 
 def yesno(question, default="n"):
-    """Ask a '"yes or no' question with a default choice defined as 'n'
-       Return True/False for 'Yes'/'No'"""
+    """
+    Ask a '"yes or no' question with a default choice defined as 'n'
+    Return True/False for 'Yes'/'No'
+    """
 
     def_indic = "[y/N]"
 

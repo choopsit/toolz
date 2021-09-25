@@ -21,14 +21,18 @@ warning = f"{cw}W{c0}:"
 
 
 def reboot():
-    """Ask for reboot"""
+    """
+    Ask for reboot
+    """
 
     if yesno("Reboot now", "y"):
         os.system("reboot")
 
 
 def get_distro():
-    """Return distro name based on '/etc/os-release' content"""
+    """
+    Return distro name based on '/etc/os-release' content
+    """
 
     distro = ""
 
@@ -41,7 +45,9 @@ def get_distro():
 
 
 def get_codename():
-    """Return codename based on '/etc/os-release' content"""
+    """
+    Return codename based on '/etc/os-release' content
+    """
 
     codename = ""
 
@@ -55,9 +61,9 @@ def get_codename():
         testing = "bookworm"
 
         if codename != stable:
-            testsid = "apt search firefox 2>/dev/null | grep ^firefox/"
+            test_sid = "apt search firefox 2>/dev/null | grep ^firefox/"
 
-            if os.popen(testsid).read() != "":
+            if os.popen(test_sid).read() != "":
                 codename = "sid"
             else:
                 codename = testing
@@ -65,8 +71,10 @@ def get_codename():
     return codename
 
 
-def prereq():
-    """Test prerequisites: Debian stable or later"""
+def debian_prereq():
+    """
+    Test prerequisites: Debian stable or later
+    """
 
     distro = get_distro()
 
@@ -87,7 +95,9 @@ def prereq():
 
 
 def is_vm():
-    """Check if machine is virtual"""
+    """
+    Check if machine is virtual
+    """
 
     test_kvm = "lspci | grep -q paravirtual"
     test_vbox = "lspci | grep -iq virtualbox"
@@ -96,7 +106,9 @@ def is_vm():
 
 
 def is_valid_hostname(hostname):
-    """Check validity of a string to be used as hostname"""
+    """
+    Check validity of a string to be used as hostname
+    """
 
     if len(hostname) > 255:
         return False
@@ -110,7 +122,9 @@ def is_valid_hostname(hostname):
 
 
 def decompose_fqdn(fqdn):
-    """Split FQDN in hostname and domain"""
+    """
+    Split FQDN in hostname and domain
+    """
 
     hostname = fqdn.split(".")[0]
     domain = ".".join(fqdn.split(".")[1:])
@@ -119,7 +133,9 @@ def decompose_fqdn(fqdn):
 
 
 def set_hostname():
-    """Define a machine hostname"""
+    """
+    Define a machine hostname
+    """
 
     fqdn = socket.getfqdn()
 
@@ -141,7 +157,9 @@ def set_hostname():
 
 
 def renew_hostname(fqdn):
-    """Apply machine naming"""
+    """
+    Apply machine naming
+    """
 
     hostname, domain = decompose_fqdn(fqdn)
 
@@ -153,8 +171,12 @@ def renew_hostname(fqdn):
     if domain != "":
         new_host_line += f".{domain}\t{hostname}"
 
-    file.overwrite("/etc/hosts", "/tmp/hosts")
-    with open("/tmp/hosts", "r") as oldf, open("/etc/hosts", "w") as newf:
+    hosts_file = "/etc/hosts"
+    tmp_file = "/tmp/hosts"
+
+    file.overwrite(hosts_file, tmp_file)
+
+    with open(tmp_file, "r") as oldf, open(hosts_file, "w") as newf:
         for line in oldf:
             if line.startswith("127.0.1.1"):
                 newf.write(new_host_line)
@@ -165,7 +187,9 @@ def renew_hostname(fqdn):
 
 
 def list_users():
-    """List users having their home directory at '/home/{user}'"""
+    """
+    List users having their home directory at '/home/{user}'
+    """
 
     users_list = []
     potential_users = os.listdir("/home")

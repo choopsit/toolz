@@ -18,7 +18,9 @@ warning = f"{cw}W{c0}:"
 
 
 def update(url, folder):
-    """Pull a git repo if avaliable, else clone it"""
+    """
+    Pull a git repo if avaliable, else clone it
+    """
 
     if os.path.isdir(folder):
         os.chdir(folder)
@@ -32,16 +34,18 @@ def update(url, folder):
 
 
 def stat_repo(path):
-    """Return git repo status"""
+    """
+    Return git repo status
+    """
 
     os.chdir(path)
     awk_cmd = "'/^Date:/ {print $2 \" \" $3 \" \" $4 \" \" $6 \" \" $5}'"
     lc_cmd = f"git show | awk {awk_cmd}"
 
-    lastcommit = os.popen(lc_cmd).read().strip("\n")
-    commitcount = os.popen("git rev-list --all --count").read().strip("\n")
+    last_commit = os.popen(lc_cmd).read().strip("\n")
+    commit_count = os.popen("git rev-list --all --count").read().strip("\n")
 
-    print(f"{ci}Last commit{c0}: {lastcommit} ({commitcount})")
+    print(f"{ci}Last commit{c0}: {last_commit} ({commit_count})")
 
     chk = os.popen("git status -s").read()
 
@@ -55,7 +59,9 @@ def stat_repo(path):
 
 
 def test_repo(path):
-    """Test if a folder is a git repo, then get its status"""
+    """
+    Test if a folder is a git repo, then get its status
+    """
 
     git_config = f"{path}/.git/config"
 

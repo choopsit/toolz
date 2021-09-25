@@ -23,15 +23,17 @@ warning = f"{cw}W{c0}:"
 
 
 def update_sourceslist(distro):
-    """Add contrib and non-free branches to Debian repos"""
+    """
+    Add contrib and non-free branches to Debian repos
+    """
 
     if distro == "debian":
         sourceslist = "/etc/apt/sources.list"
-        tmpfile = "/tmp/sources.list"
+        tmp_file = "/tmp/sources.list"
 
-        file.overwrite(sourceslist, tmpfile)
+        file.overwrite(sourceslist, tmp_file)
 
-        with open(tmpfile, "r") as oldf, open(sourceslist, "w") as tmpf:
+        with open(tmp_file, "r") as oldf, open(sourceslist, "w") as newf:
             for line in oldf:
                 okline = True
 
@@ -39,15 +41,17 @@ def update_sourceslist(distro):
                     okline = False
 
                 if okline:
-                    lineend = ""
+                    line_end = ""
 
                     if line.endswith(" main\n"):
-                        lineend = " contrib non-free"
-                    tmpf.write(f"{line.strip()}{lineend}\n")
+                        line_end = " contrib non-free"
+                    newf.write(f"{line.strip()}{line_end}\n")
 
 
 def is_installed(pkg):
-    """Check if a package is installed"""
+    """
+    Check if a package is installed
+    """
 
     inst_pkgs = []
     list_pkgs_cmd = f"dpkg -l | grep ^ii"
@@ -65,7 +69,9 @@ def is_installed(pkg):
 
 
 def install(pkgs, force_yes=False):
-    """Install a list of packages"""
+    """
+    Install a list of packages
+    """
 
     high = "" if user.is_sudo() else "sudo "
     force_yes_opt = " -y" if force_yes else ""
@@ -79,7 +85,9 @@ def install(pkgs, force_yes=False):
 
 
 def remove(pkgs, force_yes=False):
-    """Remove a list of packages"""
+    """
+    Remove a list of packages
+    """
 
     high = "" if user.is_sudo() else "sudo "
     force_yes_opt = " -y" if force_yes else ""
@@ -88,7 +96,9 @@ def remove(pkgs, force_yes=False):
 
 
 def purge(pkgs, force_yes=False):
-    """Purge a list of packages"""
+    """
+    Purge a list of packages
+    """
 
     high = "" if user.is_sudo() else "sudo "
     force_yes_opt = " -y" if force_yes else ""
@@ -102,10 +112,12 @@ def purge(pkgs, force_yes=False):
 
 
 def rm_obsoletes():
-    """Remove obsolete packages"""
+    """
+    Remove obsolete packages
+    """
 
-    get_obs = f"apt list ?obsolete 2>/dev/null | "
-    get_obs += "awk  -F'/' '/\/now/ {print $1}'"
+    awk_cmd = "'/\/now/ {print $1}'"
+    get_obs = f"apt list ?obsolete 2>/dev/null | awk  -F'/' {awk_cmd}"
     obs_out = os.popen(get_obs).read()
     obs_pkgs = [ pkg.split(":")[0] for pkg in obs_out.split("\n") ]
 
@@ -114,7 +126,9 @@ def rm_obsoletes():
 
 
 def clean(force_yes=False):
-    """Remove residual configurations and clean repo cache"""
+    """
+    Remove residual configurations and clean repo cache
+    """
 
     high = "" if user.is_sudo() else "sudo "
     force_yes_opt = " -y" if force_yes else ""
@@ -130,6 +144,7 @@ def clean(force_yes=False):
 
     if rc_pkgs != []:
         cmds.append(f"{high}{pkg_purge}{force_yes_opt} {' '.join(rc_pkgs)}")
+
     cmds.append(f"{high}{unneeded_remove}{force_yes_opt}")
     cmds.append(f"{high}{src_soft_clean}")
     cmds.append(f"{high}{src_clean}")
@@ -139,21 +154,23 @@ def clean(force_yes=False):
 
 
 def upgrade(force_yes=False):
-    """Upgrade distro"""
+    """
+    Upgrade distro
+    """
 
     high = "" if user.is_sudo() else "sudo "
     force_yes_opt = " -y" if force_yes else ""
 
-    cmds = []
-    cmds.append(f"{high}{src_update}")
-    cmds.append(f"{high}{fullupgrade}{force_yes_opt}")
+    cmds = [f"{high}{src_update}", f"{high}{fullupgrade}{force_yes_opt}"]
 
     for cmd in cmds:
         os.system(cmd)
 
 
 def prerequisites(req_pkgs):
-    """Install needed packages if not already installed"""
+    """
+    Install needed packages if not already installed
+    """
 
     missing_pkgs = []
 

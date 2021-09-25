@@ -20,7 +20,9 @@ info = f"{ci}I{c0}:"
 
 
 def get_list():
-    """List users having their home directory at '/home/{user}'"""
+    """
+    List users having their home directory at '/home/{user}'
+    """
 
     users_list = []
     potential_users = os.listdir("/home")
@@ -35,7 +37,9 @@ def get_list():
 
 
 def is_in_group(user, grp):
-    """Check if user '{user}' is in group '{grp}'"""
+    """
+    Check if user '{user}' is in group '{grp}'
+    """
 
     grp_list = os.popen(f"groups {user}").read()
 
@@ -46,13 +50,17 @@ def is_in_group(user, grp):
 
 
 def add_to_group(user, grp):
-    """Add '{user}' to group '{grp}'"""
+    """
+    Add '{user}' to group '{grp}'
+    """
 
     if yesno(f"Add '{user}' to '{grp}'", "y"):
         os.system(f"adduser {user} {grp}")
 
 
 def is_sudo():
-    """Check if script is launched as 'root' or using 'sudo'"""
+    """
+    Check if script is launched as 'root' or using 'sudo'
+    """
 
     return os.getuid() == 0
