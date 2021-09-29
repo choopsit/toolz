@@ -145,7 +145,7 @@ def backup(dest_folder):
     else:
         ecol = "\33[31m"
 
-    cfg_bkp_ret = f"{done} Config files backuped in '{bkp_folder}' with"
+    cfg_bkp_ret = f"{done} Config files backuped in '{bkp_folder}' with "
     cfg_bkp_ret += f"{ecol}{err_cfg}{c0} error(s)"
 
     print(cfg_bkp_ret)
