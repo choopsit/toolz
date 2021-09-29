@@ -36,7 +36,7 @@ def usage(err_code=0):
     exit(err_code)
 
 
-def default_logo():
+def python_logo():
     dlogo = []
     cl = ["\33[34m", "\33[33m"]
     dlogo.append(f"{cl[0]}      .####.      ")
@@ -77,7 +77,7 @@ def distro_logo(dist):
         dlogo.append(f"{cl[1]} $ '*$$*' $$$$$   ")
         dlogo.append(f"{cl[1]} ' .o@@o. '*$*'   ")
     else:
-        dlogo = default_logo()
+        dlogo = python_logo()
 
     return dlogo
 
@@ -101,7 +101,7 @@ def draw_logo(default):
     if dist and default is False:
         logo = distro_logo(dist)
     else:
-        logo = default_logo()
+        logo = python_logo()
 
     logo.append(f"     {palette}     ")
 
