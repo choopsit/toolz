@@ -172,16 +172,19 @@ def get_shell():
 def get_term():
     term = "N/A"
 
-    get_term_cmd = "x-terminal-emulator --version 2>/dev/null"
+    get_term_cmd = "cat /etc/alternatives/x-terminal-emulator | grep exec"
 
-    try:
-        os.environ['DISPLAY']
-    except KeyError:
-        for line in os.popen(get_term_cmd):
-            if "terminator" in line:
-                term = "terminator"
+    term_bin = os.popen(get_term_cmd).read().rstrip()
+
+    if term_bin:
+        term_cmd = term_bin.split("'")[1]
     else:
-        term = os.popen(get_term_cmd).read().rstrip()
+        term_cmd = "x-terminal-emulator"
+
+    term_vers_cmd = f"{term_cmd} --version"
+    term = os.popen(term_vers_cmd).read().rstrip()
+    if "\n" in term:
+        term = term.partition('\n')[0]
 
     return f"{ci}Terminal{c0}:  {term}"
 
