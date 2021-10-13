@@ -312,11 +312,10 @@ def xfce(home):
         os.makedirs(git_dir)
 
     conf_dict = {
-            "Xfce": "xfce4/xfconf/xfce-perchannel-xml",
+            "Xfce": "xfce4",
             "Thunar": "Thunar",
             "Mousepad": "Mousepad",
             "Plank": "plank",
-            "Terminator": "terminator",
             "Autostarts": "autostart"
             }
 

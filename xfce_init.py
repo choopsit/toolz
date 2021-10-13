@@ -135,22 +135,20 @@ if __name__ == "__main__":
     i386 = False
     grp_list = ["sudo"]
 
-    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop", "nfs-common"]
-    req_pkgs += ["task-xfce-desktop", "task-desktop", "slick-greeter"]
-    req_pkgs += ["xfce4-appfinder", "xfce4-appmenu-plugin"]
-    req_pkgs += ["xfce4-clipman-plugin", "xfce4-power-manager"]
-    req_pkgs += ["xfce4-pulseaudio-plugin", "xfce4-screenshooter"]
-    req_pkgs += ["xfce4-weather-plugin", "xfce4-whiskermenu-plugin"]
-    req_pkgs += ["xfce4-xkb-plugin", "catfish", "redshift-gtk"]
-    req_pkgs += ["gvfs-backends", "network-manager-gnome", "gnome-calculator"]
-    req_pkgs += ["cups", "printer-driver-escpr", "system-config-printer"]
-    req_pkgs += ["synaptic", "deborphan", "gnome-system-monitor"]
-    req_pkgs += ["plank", "terminator", "file-roller", "evince"]
-    req_pkgs += ["gthumb", "gimp", "imagemagick", "simple-scan"]
-    req_pkgs += ["mpv", "lollypop", "soundconverter", "easytag"]
-    req_pkgs += ["fonts-noto", "ttf-mscorefonts-installer"]
-    req_pkgs += ["libreoffice-gtk3", "libreoffice-style-sifr"]
-    req_pkgs += ["papirus-icon-theme", "libglib2.0-dev"]
+    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop", "nfs-common",
+            "task-xfce-desktop", "task-desktop", "slick-greeter",
+            "xfce4-appfinder", "xfce4-appmenu-plugin", "xfce4-clipman-plugin",
+            "xfce4-power-manager", "xfce4-pulseaudio-plugin",
+            "xfce4-screenshooter", "xfce4-weather-plugin",
+            "xfce4-whiskermenu-plugin", "xfce4-xkb-plugin", "catfish",
+            "redshift-gtk", "gvfs-backends", "network-manager-gnome",
+            "gnome-calculator", "cups", "printer-driver-escpr",
+            "system-config-printer", "synaptic", "deborphan",
+            "gnome-system-monitor", "plank", "file-roller", "evince", "gthumb",
+            "gimp", "imagemagick", "simple-scan", "mpv", "lollypop",
+            "soundconverter", "easytag", "ttf-mscorefonts-installer",
+            "fonts-noto", "libreoffice-gtk3", "libreoffice-style-sifr",
+            "papirus-icon-theme", "libglib2.0-dev"]
 
     ff_pkg = "firefox-esr"
 
@@ -190,7 +188,7 @@ if __name__ == "__main__":
         req_pkgs.append("steam")
         more_pkgs += f"  {cw}-{c0} steam\n"
 
-    useless_pkgs = ["xfce4-terminal", "xterm", "termit", "hv3", "xarchiver"]
+    useless_pkgs = ["xterm", "termit", "hv3", "xarchiver"]
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
     useless_pkgs += ["nano"]
 
