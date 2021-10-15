@@ -68,9 +68,12 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         exit(1)
 
-    gtk_theme = "Mojave-gtk-theme"
-    vinceliuice_theme(gtk_theme, "dark")
-    cursor_theme = "McMojave-cursors"
-    vinceliuice_theme(cursor_theme)
+    gtk_themes = ["Mojave-gtk-theme"]
+    for gtk_th in gtk_themes:
+        vinceliuice_theme(gtk_th, "dark")
+
+    cursor_themes = ["McMojave-cursors"]
+    for curs_th in cursor_themes:
+        vinceliuice_theme(curs_th)
 
     print()
