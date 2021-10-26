@@ -2,15 +2,15 @@
 
 set -e
 
-description="Install 'chromium' and 'libwidevine.so' (for Netflix), and Fix annoying gnome-keyring spawn"
-author="Choops <choopsbd@gmail.com>"
+__description__="Install 'chromium' and 'libwidevine.so' (for Netflix), and Fix annoying gnome-keyring spawn"
+__author__="Choops <choopsbd@gmail.com>"
 
 usage() {
-    echo -e "\e[36m${description}\e[0m"
+    echo -e "\e[36m${__description__}\e[0m"
     echo -e "\e[36mUsage\e[0m:"
     echo "  $(basename "$0") [OPTION]"
     echo -e "\e[36mOptions\e[0m:"
-    echo "  -h,--help: Print this help"
+    echo -e "  -h,--help: Print this help\n"
     exit $1
 }
 
