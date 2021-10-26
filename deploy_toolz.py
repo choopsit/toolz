@@ -29,20 +29,22 @@ def usage(err_code=0):
 
 
 def deploy_scripts(src, tgt):
-    scripts = [f.replace(".py", "") for f in os.listdir(src) if f.endswith(".py")]
-
     not_to_deploy = ["xfce_init"]
 
-    for script in not_to_deploy:
-        scripts.remove(script)
+    for ext in [".py", ".sh"]:
+        scripts = [f.replace(ext, "") for f in os.listdir(src) if f.endswith(ext)]
 
-    for script in scripts:
-        script_tgt = f"{os.path.join(src, script)}.py"
-        script_lnk = f"{os.path.join(tgt, script)}"
+        for script in not_to_deploy:
+            if script in scripts:
+                scripts.remove(script)
 
-        toolz.file.symlink_force(script_tgt, script_lnk)
+        for script in scripts:
+            script_tgt = f"{os.path.join(src, script)}{ext}"
+            script_lnk = f"{os.path.join(tgt, script)}"
 
-        print(f"{done} '{script}' deployed in '/usr/local/bin'")
+            toolz.file.symlink_force(script_tgt, script_lnk)
+
+            print(f"{done} '{script}' deployed in '/usr/local/bin'")
 
     print()
 
