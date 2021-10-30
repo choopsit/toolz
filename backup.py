@@ -65,16 +65,8 @@ def test_backupfolder(folder):
 
 def backup(dest_folder):
     home_backups = [".profile", ".face", ".kodi", ".mozilla", ".vim", ".steam",
-            ".config/autostart", ".config/bash", "BraveSoftware",
-            ".config/dconf", ".config/evince", ".config/GIMP",
-            ".config/libvirt", ".config/Mousepad", ".config/openvpn",
-            ".config/plank", ".config/terminator", ".config/transmisson-daemon",
-            ".config/Thunar", ".config/xfce4", ".local/bin",
-            ".local/share/applications", ".local/share/fonts",
-            ".local/share/gtksourceview-3.0", ".local/share/gtksourceview-4",
-            ".local/share/lollypop", ".local/share/plank",
-            ".local/share/rhythmbox", ".local/share/xfce4", "Documents",
-            "Music", "Pictures", "Videos", "Work", "Games"]
+            ".config", ".local", "Documents", "Music", "Pictures", "Videos",
+            "Templates", "Work", "Games"]
 
     cfg_files = ["/etc/fstab", "/etc/exports", "/etc/hosts",
             "/etc/ssh/sshd_config", "/etc/sysctl.d/99-swappiness.conf",
