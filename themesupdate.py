@@ -68,15 +68,18 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         exit(1)
 
-    gtk_themes = ["WhiteSur-gtk-theme"]
+    gtk_themes = ["Mojave-gtk-theme"]
+    #gtk_themes = ["WhiteSur-gtk-theme"]
+    #gtk_themes = ["WhiteSur-gtk-theme", "Mojave-gtk-theme"]
     for gtk_th in gtk_themes:
         vinceliuice_theme(gtk_th, "dark")
 
-    icon_themes = ["WhiteSur-icon-theme"]
-    for icon_th in icon_themes:
-        vinceliuice_theme(icon_th)
+    #icon_themes = ["WhiteSur-icon-theme"]
+    #for icon_th in icon_themes:
+    #    vinceliuice_theme(icon_th)
 
-    cursor_themes = ["WhiteSur-cursors"]
+    cursor_themes = ["McMojave-cursors"]
+    #cursor_themes = ["WhiteSur-cursors"]
     for curs_th in cursor_themes:
         vinceliuice_theme(curs_th)
 
