@@ -76,7 +76,7 @@ def get_gw():
 def get_dns():
     get_dns_cmd = "dig | awk -F'(' '/SERVER:/{print $2}' | sed 's/.$//'"
 
-    return os.popen(get_dns_cmd).read().rstrip("\n")
+    return os.popen(get_dns_cmd).read().rstrip(")\n")
 
 
 def list_ifaces():
