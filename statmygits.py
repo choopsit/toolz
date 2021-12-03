@@ -37,6 +37,8 @@ def get_repos_status(git_stock):
 
         if os.path.isdir(f"{path}/.git"):
             cpt += 1
+            if cpt == 1:
+                print(f"{ci}Git repos status{c0}:")
             print(f"{ci}Repo{c0}: {repo}")
             toolz.git.stat_repo(path)
 

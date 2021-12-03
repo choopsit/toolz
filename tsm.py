@@ -189,7 +189,7 @@ def test_port():
 
     if port != "":
         print(f"{ci}Transmission-daemon status{c0}:")
-        print(f"{ci}Testing port '{cw}{port}{ci}'...{c0}")
+        print(f"{ci}Testing port '{cw}{port}{ci}'{c0}...")
         os.system("transmission-remote -pt")
         print()
     else:

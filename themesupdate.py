@@ -68,6 +68,7 @@ if __name__ == "__main__":
         print(f"{error} Bad argument\n")
         exit(1)
 
+    print(f"{ci}Themes upgrade{c0}:")
     gtk_themes = ["Mojave-gtk-theme"]
     #gtk_themes = ["WhiteSur-gtk-theme"]
     #gtk_themes = ["WhiteSur-gtk-theme", "Mojave-gtk-theme"]
