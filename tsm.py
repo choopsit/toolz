@@ -190,8 +190,15 @@ def test_port():
     if port != "":
         print(f"{ci}Transmission-daemon status{c0}:")
         print(f"{ci}Testing port '{cw}{port}{ci}'{c0}...")
-        os.system("transmission-remote -pt")
-        print()
+
+        test_cmd = "transmission-remote -pt"
+        output = subprocess.getoutput(test_cmd)
+
+        if output.endswith("Yes"):
+            print(f"{done} {output}\n")
+        else:
+            print(f"{error} {output}\n")
+
     else:
         print(f"{error} Can not find port in transmission-daemon config\n")
         exit(1)
