@@ -169,10 +169,16 @@ if __name__ == "__main__":
     more_pkgs = ""
 
     if not toolz.syst.is_vm():
-        if toolz.yesno("Install Virtual Machine Manager"):
-            req_pkgs.append("virt-manager")
-            grp_list.append("libvirt")
-            more_pkgs += f"  {cw}-{c0} virt-manager\n"
+        if toolz.yesno("Install virtual machines support"):
+            if toolz.yesno("Install VirtualBox"):
+                req_pkgsi += ["virtualbox", "virtualbox-ext-pack",
+                        "virtualbox-guest-additions-iso"]
+                #grp_list.append("vboxuser")
+                more_pkgs += f"  {cw}-{c0} VirtualBox\n"
+            elif toolz.yesno("Install Virtual Machine Manager"):
+                req_pkgs.append("virt-manager")
+                grp_list.append("libvirt")
+                more_pkgs += f"  {cw}-{c0} virt-manager\n"
 
     if toolz.yesno("Install transmission-daemon (torrent client)"):
         req_pkgs.append("transmission-daemon")
