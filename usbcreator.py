@@ -31,7 +31,7 @@ def test_device(device):
 
     my_dev = f"/dev/{device}"
 
-    if not os.path.exists(mydev):
+    if not os.path.exists(my_dev):
         print(f"{error} No device '{device}' available\n")
         exit(1)
 
