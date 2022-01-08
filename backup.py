@@ -28,7 +28,7 @@ warning = f"{cw}W{c0}:"
 def usage(err_code=0):
     my_script = os.path.basename(__file__)
     print(f"{ci}{__description__}\nUsage{c0}:")
-    print(f"  {my_script} [OPTION]")
+    print(f"  {my_script} [OPTION] [DESTINATION_FOLDER]")
     print(f"{ci}Options{c0}:")
     print(f"  -h,--help: Print this help\n")
     exit(err_code)
@@ -81,7 +81,7 @@ def rsync_bkp(bkp_src, bkp_folder):
 
 def backup_to(dst_folder):
     today = datetime.datetime.today().strftime("%y%m")
-    bkp_folder = f"{dst_folder}/bkp_{today}_{my_hostname}"
+    bkp_folder = f"{dst_folder}/{today}_{my_hostname}"
 
     home_backups = [".profile", ".face", ".kodi", ".mozilla", ".vim", ".steam",
             ".config", ".local", "Documents", "Music", "Pictures", "Videos",
@@ -158,21 +158,22 @@ def backup_to(dst_folder):
 
 
 if __name__ == "__main__":
+    my_hostname = socket.gethostname()
+
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
+    elif len(sys.argv) == 2 and test_backupfolder(sys.argv[1]):
+        dst_folder == sys.argv[1]
     elif len(sys.argv) > 1:
         print(f"{error} Bad argument\n")
         usage(1)
-
-    dst_folder = ""
-    my_hostname = socket.gethostname()
-
-    if my_hostname == "mrchat":
-        dst_folder = "/backup"
-    elif my_hostname == "coincoin":
-        dst_folder = "choops@mrchat:/backup"
     else:
-        dst_folder = input("Destination ? ")
+        if my_hostname == "mrchat":
+            dst_folder = "/backup"
+        elif my_hostname == "coincoin":
+            dst_folder = "choops@mrchat:/backup"
+        else:
+            dst_folder = input("Destination ? ")
 
     if test_backupfolder(dst_folder):
         req_pkgs = ["rsync"]
