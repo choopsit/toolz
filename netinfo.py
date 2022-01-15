@@ -33,12 +33,13 @@ def usage(err_code=0):
 
 def get_host_info():
     my_hostname = socket.gethostname()
-    print(f"{ci}Hostname{c0}: {my_hostname}")
 
     my_fqdn = socket.getfqdn()
 
     if my_fqdn != my_hostname:
-        print(f"{ci}FQDN{c0}: {my_fqdn}")
+        my_hostname = my_fqdn
+
+    print(f"{ci}Hostname/FQDN{c0}: {cw}{my_hostname}")
 
 
 def get_mtu(ifname):
