@@ -57,14 +57,14 @@ def test_device(device):
 
 def choose_debian_version():
     vlist = ["stable", "oldstable", "testing"]
-    rl = "https://cdimage.debian.org/cdimage"
+    deb_url = "https://cdimage.debian.org/cdimage"
 
     # check latest stable version at:
     #  https://cdimage.debian.org/cdimage/release/current/amd64/iso-cd
-    last_stable = "11.0.0"
+    last_stable = "11.2.0"
     # check latest oldstable version at:
     #  https://cdimage.debian.org/cdimage/archive/latest-oldstable/amd64/iso-cd
-    last_oldstable = "10.10.0"
+    last_oldstable = "10.11.0"
 
     isos = ["", "", ""]
     isos[0] = f"release/current/amd64/iso-cd/debian-{last_stable}"
@@ -91,7 +91,7 @@ def choose_debian_version():
     for i in range(len(vlist)):
         if vchoice == i:
             version = vlist[vchoice]
-            iso_url = f"{rl}/{isos[vchoice]}-amd64-netinst.iso"
+            iso_url = f"{deb_url}/{isos[vchoice]}-amd64-netinst.iso"
 
     if version == "":
         print(f"{error} Out of range choice '{vchoice}'\n")
@@ -107,7 +107,7 @@ def create_usbkey(device, distro):
     elif distro == "Clonezilla":
         # check latest version at:
         #  https://clonezilla.org/downloads/download.php?branch=stable
-        version = "2.7.2-39"
+        version = "2.8.1-12"
         url = "https://sourceforge.net/projects/clonezilla/files/"
         url += f"clonezilla_live_stable/{version}/"
         url += f"clonezilla-live-{version}-amd64.iso/download"
@@ -116,7 +116,7 @@ def create_usbkey(device, distro):
         # check latest LTS codename (version) and version number at:
         #  https://cdimages.ubuntu.com/xubuntu/releases
         codename = "focal"
-        version = "20.04.2.0"
+        version = "20.04.3.0"
         url = f"https://cdimages.ubuntu.com/xubuntu/releases/{codename}/"
         url += f"release/xubuntu-{version}-desktop-amd64.iso"
         iso = "/tmp/xubuntu.iso"
