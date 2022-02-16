@@ -135,15 +135,15 @@ if __name__ == "__main__":
     i386 = False
     grp_list = ["sudo"]
 
-    req_pkgs = ["vim", "git", "ssh", "rsync", "tree", "htop", "nfs-common",
-            "task-xfce-desktop", "task-desktop", "slick-greeter",
+    req_pkgs = ["vim", "git", "ssh", "rsync", "curl", "tree", "htop",
+            "nfs-common", "task-xfce-desktop", "task-desktop", "slick-greeter",
             "xfce4-appfinder", "xfce4-appmenu-plugin", "xfce4-clipman-plugin",
             "xfce4-power-manager", "xfce4-pulseaudio-plugin",
             "xfce4-screenshooter", "xfce4-weather-plugin",
             "xfce4-whiskermenu-plugin", "xfce4-xkb-plugin", "catfish",
             "redshift-gtk", "gvfs-backends", "network-manager-gnome",
             "gnome-calculator", "cups", "printer-driver-escpr",
-            "system-config-printer", "synaptic", "deborphan",
+            "system-config-printer", "synaptic", "deborphan", "needrestart",
             "gnome-system-monitor", "plank", "file-roller", "evince", "gthumb",
             "gimp", "imagemagick", "simple-scan", "mpv", "lollypop",
             "soundconverter", "easytag", "ttf-mscorefonts-installer",
@@ -169,13 +169,14 @@ if __name__ == "__main__":
     more_pkgs = ""
 
     if not toolz.syst.is_vm():
-        if toolz.yesno("Install virtual machines support"):
-            if toolz.yesno("Install VirtualBox"):
+        vms_list = "(VirtualBox | Virt-manager)"
+        if toolz.yesno(f"Install virtual machines support {vms_list}"):
+            if toolz.yesno("1. Install VirtualBox"):
                 req_pkgsi += ["virtualbox", "virtualbox-ext-pack",
                         "virtualbox-guest-additions-iso"]
                 #grp_list.append("vboxuser")
                 more_pkgs += f"  {cw}-{c0} VirtualBox\n"
-            elif toolz.yesno("Install Virtual Machine Manager"):
+            elif toolz.yesno("2. Install Virtual Machine Manager"):
                 req_pkgs.append("virt-manager")
                 grp_list.append("libvirt")
                 more_pkgs += f"  {cw}-{c0} virt-manager\n"
@@ -194,9 +195,8 @@ if __name__ == "__main__":
         req_pkgs.append("steam")
         more_pkgs += f"  {cw}-{c0} steam\n"
 
-    useless_pkgs = ["xterm", "termit", "hv3", "xarchiver"]
+    useless_pkgs = ["xterm", "termit", "hv3", "nano", "xarchiver"]
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
-    useless_pkgs += ["nano"]
 
     user_list = toolz.syst.list_users()
     users_to_add = []
