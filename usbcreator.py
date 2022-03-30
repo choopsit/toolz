@@ -61,7 +61,7 @@ def choose_debian_version():
 
     # check latest stable version at:
     #  https://cdimage.debian.org/cdimage/release/current/amd64/iso-cd
-    last_stable = "11.2.0"
+    last_stable = "11.3.0"
     # check latest oldstable version at:
     #  https://cdimage.debian.org/cdimage/archive/latest-oldstable/amd64/iso-cd
     last_oldstable = "10.11.0"

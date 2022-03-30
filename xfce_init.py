@@ -143,7 +143,7 @@ if __name__ == "__main__":
             "xfce4-whiskermenu-plugin", "xfce4-xkb-plugin", "catfish",
             "redshift-gtk", "gvfs-backends", "network-manager-gnome",
             "gnome-calculator", "cups", "printer-driver-escpr",
-            "system-config-printer", "synaptic", "deborphan", "needrestart",
+            "system-config-printer", "synaptic", "deborphan",
             "gnome-system-monitor", "plank", "file-roller", "evince", "gthumb",
             "gimp", "imagemagick", "simple-scan", "mpv", "lollypop",
             "soundconverter", "easytag", "ttf-mscorefonts-installer",
@@ -169,17 +169,17 @@ if __name__ == "__main__":
     more_pkgs = ""
 
     if not toolz.syst.is_vm():
-        vms_list = "(VirtualBox | Virt-manager)"
+        vms_list = "(Virt-manager | VirtualBox )"
         if toolz.yesno(f"Install virtual machines support {vms_list}"):
-            if toolz.yesno("1. Install VirtualBox"):
+            if toolz.yesno("1. Install Virtual Machine Manager"):
+                req_pkgs.append("virt-manager")
+                grp_list.append("libvirt")
+                more_pkgs += f"  {cw}-{c0} virt-manager\n"
+            elif toolz.yesno("2. Install VirtualBox"):
                 req_pkgsi += ["virtualbox", "virtualbox-ext-pack",
                         "virtualbox-guest-additions-iso"]
                 #grp_list.append("vboxuser")
                 more_pkgs += f"  {cw}-{c0} VirtualBox\n"
-            elif toolz.yesno("2. Install Virtual Machine Manager"):
-                req_pkgs.append("virt-manager")
-                grp_list.append("libvirt")
-                more_pkgs += f"  {cw}-{c0} virt-manager\n"
 
     if toolz.yesno("Install transmission-daemon (torrent client)"):
         req_pkgs.append("transmission-daemon")
