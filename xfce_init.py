@@ -195,7 +195,7 @@ if __name__ == "__main__":
         req_pkgs.append("steam")
         more_pkgs += f"  {cw}-{c0} steam\n"
 
-    useless_pkgs = ["xterm", "termit", "hv3", "nano", "xarchiver"]
+    useless_pkgs = ["xterm", "termit", "tilix", "hv3", "nano", "xarchiver"]
     useless_pkgs += ["parole", "quodlibet", "exfalso", "atril*", "xsane*"]
 
     user_list = toolz.syst.list_users()
