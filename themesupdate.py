@@ -70,9 +70,9 @@ if __name__ == "__main__":
         exit(1)
 
     print(f"{ci}Themes upgrade{c0}:")
-    #gtk_themes = ["Mojave-gtk-theme"]
+    gtk_themes = ["Mojave-gtk-theme"]
     #gtk_themes = ["WhiteSur-gtk-theme"]
-    gtk_themes = ["WhiteSur-gtk-theme", "Mojave-gtk-theme"]
+    #gtk_themes = ["WhiteSur-gtk-theme", "Mojave-gtk-theme"]
     for gtk_th in gtk_themes:
         vinceliuice_theme(gtk_th, "dark")
 
@@ -80,9 +80,9 @@ if __name__ == "__main__":
     #for icon_th in icon_themes:
     #    vinceliuice_theme(icon_th)
 
-    #cursor_themes = ["McMojave-cursors"]
+    cursor_themes = ["McMojave-cursors"]
     #cursor_themes = ["WhiteSur-cursors"]
-    cursor_themes = ["WhiteSur-cursors", "McMojave-cursors"]
+    #cursor_themes = ["WhiteSur-cursors", "McMojave-cursors"]
     for curs_th in cursor_themes:
         vinceliuice_theme(curs_th)
 
