@@ -94,7 +94,7 @@ def specials(hostname):
                     "/volume/grodix", "btrfs", "defaults"],
                 "speedix": ["40b3c512-b22e-4842-b9e1-aa3262c4d1d8",
                     "/volumes/speedix", "btrfs", "defaults"],
-                "backup": ["5a127881-4326-411d-a8a8-30d5b9271b12",
+                "backup": ["90f3ce77-4ad9-4b44-8f45-f5e85a23a91d",
                     "/backup", "btrfs", "defaults,auto"]
                 }
 
