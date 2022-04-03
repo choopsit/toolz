@@ -8,22 +8,23 @@ import re
 __description__ = "Graphical filesystems usage"
 __author__ = "Choops <choopsbd@gmail.com>"
 
-c0 = "\33[0m"
-ce = "\33[31m"
-cok = "\33[32m"
-cw = "\33[33m"
-ci = "\33[36m"
+DEF = "\33[0m"
+RED = "\33[31m"
+GRN = "\33[32m"
+YLO = "\33[33m"
+CYN = "\33[36m"
 
-error = f"{ce}E{c0}:"
-done = f"{cok}OK{c0}:"
-warning = f"{cw}W{c0}:"
+ERR = f"{RED}ERR{DEF}:"
+OK = f"{GRN}OK{DEF}:"
+WRN = f"{YLO}WRN{DEF}:"
+NFO = f"{CYN}NFO{DEF}"
 
 
 def usage(err_code=0):
     my_script = os.path.basename(__file__)
-    print(f"{ci}{__description__}\nUsage{c0}:")
+    print(f"{CYN}{__description__}\nUsage{DEF}:")
     print(f"  {my_script} [OPTION]")
-    print(f"{ci}Options{c0}:")
+    print(f"{CYN}Options{DEF}:")
     print(f"  -h,--help: Print this help")
     print(f"  -a,--all:  Show all filesystems including tmpfs\n")
     exit(err_code)
@@ -99,28 +100,29 @@ def draw_fs(mount_point):
     used_u = used / factor
     free_u = total_u - used_u
 
-    tline = f"-{ci}{mount_point[2]}{c0}:\n"
-    tline += f"  {ci}type{c0}: {ctxt}{mount_point[1]}\t"
-    tline += f"{ci}mounted on{c0}: {ctxt}{mount_point[0]}{c0}"
+    #tline = f"-{CYN}{mount_point[2]}{DEF}:\n"
+    tline = f"-{YLO}{mount_point[2]}{DEF}:\n"
+    tline += f"  {CYN}type{DEF}: {ctxt}{mount_point[1]}\t"
+    tline += f"{CYN}mounted on{DEF}: {ctxt}{mount_point[0]}{DEF}"
 
     repart = f"{used_u:.1f}/{total_u:.1f}{unit}"
     lensep = 13 - len(repart)
     sep = " " * lensep
 
-    gline = f"  [{cfs}{used_gr}{cn}{free_gr}{c0}]{sepg}{cfs}{used_prop}{c0}%"
-    gline += f" {sep}{ctxt}{repart}{c0}"
+    gline = f"  [{cfs}{used_gr}{cn}{free_gr}{DEF}]{sepg}{cfs}{used_prop}{DEF}%"
+    gline += f" {sep}{ctxt}{repart}{DEF}"
 
     freesp= f"{free_u:.1f}{unit}"
     lenfsep = 8 - len(freesp)
     fsep = " " * lenfsep
 
-    gline += f" -{fsep}{ctxt}{freesp} free{c0}"
+    gline += f" -{fsep}{ctxt}{freesp} free{DEF}"
 
     print(f"{tline}\n{gline}")
 
 
 def fs_info(fs_regex):
-    print(f"{ci}Filesystems{c0}:")
+    print(f"{CYN}Filesystems{DEF}:")
 
     with open("/proc/mounts", "r") as f:
         mounts = [(line.split()[1].replace('\\040', ' '), line.split()[2], line.split()[0])
@@ -141,7 +143,7 @@ if __name__ == "__main__":
     elif len(sys.argv) == 2 and sys.argv[1] in ["-a","--all"]:
         my_fs_regex += '|.*tmpfs'
     elif len(sys.argv) > 1:
-        print(f"{error} Bad argument\n")
+        print(f"{ERR} Bad argument\n")
         usage(1)
 
     fs_info(my_fs_regex)

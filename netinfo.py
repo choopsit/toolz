@@ -11,22 +11,23 @@ import struct
 __description__ = "Show network informations"
 __author__ = "Choops <choopsbd@gmail.com>"
 
-c0 = "\33[0m"
-ce = "\33[31m"
-cok = "\33[32m"
-cw = "\33[33m"
-ci = "\33[36m"
+DEF = "\33[0m"
+RED = "\33[31m"
+GRN = "\33[32m"
+YLO = "\33[33m"
+CYN = "\33[36m"
 
-error = f"{ce}E{c0}:"
-done = f"{cok}OK{c0}:"
-warning = f"{cw}W{c0}:"
+ERR = f"{RED}ERR{DEF}:"
+OK = f"{GRN}OK{DEF}:"
+WRN = f"{YLO}WRN{DEF}:"
+NFO = f"{CYN}NFO{DEF}"
 
 
 def usage(err_code=0):
     my_script = os.path.basename(__file__)
-    print(f"{ci}{__description__}\nUsage{c0}:")
+    print(f"{CYN}{__description__}\nUsage{DEF}:")
     print(f"  {my_script} [OPTION]")
-    print(f"{ci}Options{c0}:")
+    print(f"{CYN}Options{DEF}:")
     print(f"  -h,--help: Print this help\n")
     exit(err_code)
 
@@ -39,7 +40,7 @@ def get_host_info():
     if my_fqdn != my_hostname:
         my_hostname = my_fqdn
 
-    print(f"{ci}Hostname/FQDN{c0}: {cw}{my_hostname}")
+    print(f"{CYN}Hostname/FQDN{DEF}: {YLO}{my_hostname}")
 
 
 def get_mtu(ifname):
@@ -85,19 +86,19 @@ def list_ifaces():
 
     for iface in if_list:
         if not re.match('^(lo|vif.*|virbr.*-.*|vnet.*)$', iface):
-            print(f"{ci}Interface{c0}: {iface}")
+            print(f"{CYN}Interface{DEF}: {iface}")
             mtu = get_mtu(iface)
-            print(f"  - {ci}MTU{c0}:         {mtu}")
+            print(f"  - {CYN}MTU{DEF}:         {mtu}")
             macaddr = get_mac(iface)
-            print(f"  - {ci}MAC address{c0}: {macaddr}")
+            print(f"  - {CYN}MAC address{DEF}: {macaddr}")
             ipaddr = get_ip(iface)
-            print(f"  - {ci}IP address{c0}:  {ipaddr}")
+            print(f"  - {CYN}IP address{DEF}:  {ipaddr}")
 
     gw = get_gw()
-    print(f"{ci}Gateway{c0}:         {gw}")
+    print(f"{CYN}Gateway{DEF}:         {gw}")
 
     nameserver = get_dns()
-    print(f"{ci}DNS nameserver{c0}:  {nameserver}")
+    print(f"{CYN}DNS nameserver{DEF}:  {nameserver}")
     print()
 
 
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     if any(arg in sys.argv for arg in ["-h","--help"]):
         usage()
     elif len(sys.argv) > 1:
-        print(f"{error} Bad argument")
+        print(f"{ERR} Bad argument")
         usage(1)
 
     get_host_info()

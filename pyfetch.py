@@ -14,22 +14,23 @@ import pathlib
 __description__ = "Fetch system informations"
 __author__ = "Choops <choopsbd@gmail.com>"
 
-c0 = "\33[0m"
-ce = "\33[31m"
-cok = "\33[32m"
-cw = "\33[33m"
-ci = "\33[36m"
+DEF = "\33[0m"
+RED = "\33[31m"
+GRN = "\33[32m"
+YLO = "\33[33m"
+CYN = "\33[36m"
 
-error = f"{ce}E{c0}:"
-done = f"{cok}OK{c0}:"
-warning = f"{cw}W{c0}:"
+ERR = f"{RED}ERR{DEF}:"
+OK = f"{GRN}OK{DEF}:"
+WRN = f"{YLO}WRN{DEF}:"
+NFO = f"{CYN}NFO{DEF}"
 
 
 def usage(err_code=0):
     my_script = os.path.basename(__file__)
-    print(f"{ci}{__description__}\nUsage{c0}:")
+    print(f"{CYN}{__description__}\nUsage{DEF}:")
     print(f"  {my_script} [OPTION]")
-    print(f"{ci}Options{c0}:")
+    print(f"{CYN}Options{DEF}:")
     print(f"  -h,--help:         Print this help")
     print(f"  -d,--default-logo: Use default logo")
     print()
@@ -88,7 +89,7 @@ def draw_logo(default):
 
     palette = ""
     for cpal in cpalette:
-        palette += f"{cpal}#{c0}"
+        palette += f"{cpal}#{DEF}"
 
     logo = []
 
@@ -113,7 +114,7 @@ def get_host():
     my_user = getpass.getuser()
     my_hostname = socket.gethostname()
 
-    return f"{ch}{my_user}{c0}@{ch}{my_hostname}{c0}"
+    return f"{ch}{my_user}{DEF}@{ch}{my_hostname}{DEF}"
 
 
 def get_os():
@@ -124,7 +125,7 @@ def get_os():
 
     os_name += " "+platform.machine()
 
-    return f"{ci}OS{c0}:     {os_name}"
+    return f"{CYN}OS{DEF}:     {os_name}"
 
 
 def get_kernel():
@@ -135,7 +136,7 @@ def get_kernel():
     if len(kernel) < 12:
         sep = "\t"
 
-    return f"{ci}Kernel{c0}: {kernel}{sep}"
+    return f"{CYN}Kernel{DEF}: {kernel}{sep}"
 
 
 def get_packages(dist):
@@ -150,7 +151,7 @@ def get_packages(dist):
         pkg_count = subprocess.check_output(count_cmd, stdin=pkg_list.stdout,
                 universal_newlines=True).rstrip("\n")
 
-    return f"{ci}Packages{c0}:  {pkg_count}"
+    return f"{CYN}Packages{DEF}:  {pkg_count}"
 
 
 def get_uptime():
@@ -158,7 +159,7 @@ def get_uptime():
         uptime_seconds = int(float(f.readline().split()[0]))
         uptime_string = datetime.timedelta(seconds=uptime_seconds)
 
-    return f"{ci}Uptime{c0}: {uptime_string}"
+    return f"{CYN}Uptime{DEF}: {uptime_string}"
 
 
 def get_shell():
@@ -166,7 +167,7 @@ def get_shell():
     shell_vf = str(subprocess.check_output(['bash', '--version'])).split()[3]
     shell_v = shell_vf.split("(")[0]
 
-    return f"{ci}Shell{c0}:  {shell} {shell_v}"
+    return f"{CYN}Shell{DEF}:  {shell} {shell_v}"
 
 
 def get_term():
@@ -186,7 +187,7 @@ def get_term():
     if "\n" in term:
         term = term.partition('\n')[0]
 
-    return f"{ci}Terminal{c0}:  {term}"
+    return f"{CYN}Terminal{DEF}:  {term}"
 
 
 def get_de():
@@ -219,7 +220,7 @@ def get_de():
     elif len(de) > 12:
         sep = "\t"
 
-    return f"{ci}DE{c0}:     {de}{sep}{ci}WM{c0}:\t   {wm}", de, wm
+    return f"{CYN}DE{DEF}:     {de}{sep}{CYN}WM{DEF}:\t   {wm}", de, wm
 
 
 def get_perso(de, wm):
@@ -256,7 +257,7 @@ def get_perso(de, wm):
     elif len(icon_th) > 12:
         sep = "\t"
 
-    return f"{ci}Icons{c0}:  {icon_th}{sep}{ci}GTK-theme{c0}: {gtk_th}"
+    return f"{CYN}Icons{DEF}:  {icon_th}{sep}{CYN}GTK-theme{DEF}: {gtk_th}"
 
 
 def get_cpu():
@@ -267,7 +268,7 @@ def get_cpu():
                 thread_count += 1
                 cpu = line.split(': ')[1].rstrip("\n")
 
-    return f"{ci}CPU{c0}:    {cpu} ({thread_count} threads)"
+    return f"{CYN}CPU{DEF}:    {cpu} ({thread_count} threads)"
 
 
 def get_gpu():
@@ -278,7 +279,7 @@ def get_gpu():
             universal_newlines=True).rstrip("\n")
     gpu = gpu_info.split(": ")[1]
 
-    return f"{ci}GPU{c0}:    {gpu}"
+    return f"{CYN}GPU{DEF}:    {gpu}"
 
 
 def get_mem():
@@ -303,8 +304,8 @@ def get_mem():
     if len(mem_repart) < 10:
         msep += "\t"
 
-    ret = f"{ci}RAM{c0}:    {mem_repart}MB {msep}"
-    ret += f"{ci}Swap{c0}:      {swap_repart}MB"
+    ret = f"{CYN}RAM{DEF}:    {mem_repart}MB {msep}"
+    ret += f"{CYN}Swap{DEF}:      {swap_repart}MB"
 
     return ret
 
