@@ -292,8 +292,8 @@ def gruvbox_gtk():
         style_url = "https://raw.githubusercontent.com/morhetz/"
         style_url += f"gruvbox-contrib/master/gedit/{style}"
 
-        style_tgts = [f"/usr/share/gtksourceview-3.0/styles/{style}"]
-        style_tgts.append(style_tgts[0].replace("3.0", "4"))
+        style_tgts = [f"/usr/share/gtksourceview-/styles/{style}"]
+        style_tgts.append(style_tgts[0].replace("4", "5"))
 
         for style_tgt in style_tgts:
             if not os.path.exists(style_tgt):
